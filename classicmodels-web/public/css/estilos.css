@@ -1,0 +1,314 @@
+/* ==========================================================================
+   estilos.css  -  Hoja de estilos unica del sistema
+   Organizada en secciones:
+     1. Variables y reinicio
+     2. Pagina de acceso (login / registro)
+     3. Barra superior y menu
+     4. Contenido y secciones
+     5. Tarjetas de resumen
+     6. Formularios
+     7. Tablas
+     8. Botones y avisos
+     9. Adaptacion a pantallas pequenas
+   ========================================================================== */
+
+/* ---------- 1. VARIABLES Y REINICIO ---------- */
+:root {
+  --azul:        #1a4d7a;
+  --azul-claro:  #2b6ca3;
+  --gris-fondo:  #f2f4f7;
+  --gris-borde:  #d5dae1;
+  --gris-texto:  #4a5560;
+  --verde:       #2e7d4f;
+  --rojo:        #b3261e;
+  --ambar:       #b06f00;
+  --blanco:      #ffffff;
+  --radio:       6px;
+  --sombra:      0 1px 3px rgba(0,0,0,.12);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--gris-fondo);
+  color: #1c2530;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.oculto { display: none !important; }
+
+/* ---------- 2. PAGINA DE ACCESO ---------- */
+.pagina-acceso {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--azul) 0%, #0e2d47 100%);
+  padding: 1rem;
+}
+
+.tarjeta-acceso {
+  background: var(--blanco);
+  width: 100%;
+  max-width: 400px;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+.cabecera-acceso { text-align: center; margin-bottom: 1.5rem; }
+.cabecera-acceso h1 { color: var(--azul); font-size: 1.6rem; }
+.cabecera-acceso p  { color: var(--gris-texto); font-size: .85rem; }
+
+.tarjeta-acceso h2 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--azul); }
+
+.enlace { text-align: center; margin-top: 1rem; font-size: .85rem; color: var(--gris-texto); }
+.enlace a { color: var(--azul-claro); text-decoration: none; font-weight: 600; }
+.enlace a:hover { text-decoration: underline; }
+
+.pie-acceso {
+  margin-top: 1.5rem; padding-top: 1rem;
+  border-top: 1px solid var(--gris-borde);
+  text-align: center; font-size: .75rem; color: var(--gris-texto);
+}
+
+/* ---------- 3. BARRA SUPERIOR Y MENU ---------- */
+.barra-superior {
+  background: var(--azul);
+  color: var(--blanco);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1.5rem;
+  height: 56px;
+  box-shadow: var(--sombra);
+  position: sticky; top: 0; z-index: 10;
+}
+
+.marca { font-weight: 700; font-size: 1.05rem; white-space: nowrap; }
+
+.menu { display: flex; gap: .25rem; flex: 1; overflow-x: auto; }
+
+.boton-menu {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,.8);
+  padding: .5rem .9rem;
+  border-radius: var(--radio);
+  cursor: pointer;
+  font-size: .9rem;
+  white-space: nowrap;
+}
+.boton-menu:hover  { background: rgba(255,255,255,.12); color: #fff; }
+.boton-menu.activo { background: rgba(255,255,255,.2);  color: #fff; font-weight: 600; }
+
+.usuario { display: flex; align-items: center; gap: .75rem; font-size: .85rem; white-space: nowrap; }
+
+/* ---------- 4. CONTENIDO Y SECCIONES ---------- */
+.contenido { max-width: 1280px; margin: 0 auto; padding: 1.5rem; }
+
+.seccion h1 { font-size: 1.5rem; color: var(--azul); }
+.subtitulo  { color: var(--gris-texto); margin-bottom: 1.25rem; font-size: .9rem; }
+.seccion h2 { font-size: 1.1rem; margin: 1.5rem 0 .75rem; color: var(--azul); }
+
+.panel {
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.panel h3 { color: var(--azul); margin-bottom: .25rem; }
+
+.ayuda { font-size: .8rem; color: var(--gris-texto); margin-bottom: .75rem; }
+.ayuda code {
+  background: #e8ecf1; padding: .1rem .35rem;
+  border-radius: 3px; font-size: .78rem;
+}
+
+/* ---------- 5. TARJETAS DE RESUMEN ---------- */
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.tarjeta {
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-left: 4px solid var(--azul-claro);
+  border-radius: var(--radio);
+  padding: 1rem;
+}
+.tarjeta .valor    { font-size: 1.7rem; font-weight: 700; color: var(--azul); }
+.tarjeta .etiqueta { font-size: .8rem;  color: var(--gris-texto); text-transform: uppercase; }
+
+/* ---------- 6. FORMULARIOS ---------- */
+.campo { margin-bottom: .9rem; }
+.campo label { display: block; font-size: .8rem; font-weight: 600; margin-bottom: .3rem; color: var(--gris-texto); }
+
+input, select {
+  width: 100%;
+  padding: .55rem .7rem;
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio);
+  font-size: .9rem;
+  font-family: inherit;
+  background: var(--blanco);
+}
+input:focus, select:focus { outline: 2px solid var(--azul-claro); outline-offset: -1px; }
+
+.formulario {
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.formulario h3 { color: var(--azul); margin-bottom: 1rem; }
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0 1rem;
+}
+.ancho-completo { grid-column: 1 / -1; }
+
+.acciones-formulario { display: flex; gap: .5rem; margin-top: .5rem; }
+
+.barra-acciones {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.barra-acciones input, .barra-acciones select { width: auto; min-width: 180px; }
+.barra-acciones label { font-size: .85rem; color: var(--gris-texto); }
+
+.pestanas { gap: .35rem; }
+
+/* ---------- 7. TABLAS ---------- */
+.contenedor-tabla {
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio);
+  overflow: auto;
+  max-height: 65vh;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+
+thead th {
+  background: #eef1f5;
+  color: var(--azul);
+  text-align: left;
+  padding: .6rem .75rem;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  border-bottom: 2px solid var(--gris-borde);
+  position: sticky; top: 0;
+  white-space: nowrap;
+}
+
+tbody td { padding: .5rem .75rem; border-bottom: 1px solid #eceff3; }
+tbody tr:hover { background: #f7f9fb; }
+td.numero { text-align: right; font-variant-numeric: tabular-nums; }
+
+.sin-datos { padding: 2rem; text-align: center; color: var(--gris-texto); }
+
+.contador { font-size: .8rem; color: var(--gris-texto); margin-bottom: .5rem; }
+
+/* Etiquetas de estado dentro de las tablas */
+.etiqueta {
+  display: inline-block; padding: .12rem .5rem;
+  border-radius: 10px; font-size: .72rem; font-weight: 600;
+}
+.et-rojo  { background: #fce8e6; color: var(--rojo); }
+.et-ambar { background: #fdf0d5; color: var(--ambar); }
+.et-verde { background: #e3f3e9; color: var(--verde); }
+
+/* ---------- 8. BOTONES Y AVISOS ---------- */
+.boton {
+  padding: .5rem 1rem;
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio);
+  background: var(--blanco);
+  color: var(--gris-texto);
+  cursor: pointer;
+  font-size: .87rem;
+  font-family: inherit;
+}
+.boton:hover { background: #eef1f5; }
+
+.boton-principal {
+  background: var(--azul);
+  border-color: var(--azul);
+  color: var(--blanco);
+  font-weight: 600;
+  width: auto;
+}
+.boton-principal:hover { background: var(--azul-claro); }
+
+.tarjeta-acceso .boton-principal { width: 100%; padding: .7rem; margin-top: .5rem; }
+
+.boton-salir {
+  background: rgba(255,255,255,.15);
+  border-color: rgba(255,255,255,.3);
+  color: var(--blanco);
+  padding: .35rem .8rem;
+}
+.boton-salir:hover { background: rgba(255,255,255,.25); }
+
+.boton-reporte {
+  padding: .45rem .85rem;
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio);
+  background: var(--blanco);
+  cursor: pointer;
+  font-size: .85rem;
+  font-family: inherit;
+}
+.boton-reporte.activo { background: var(--azul); color: var(--blanco); border-color: var(--azul); }
+
+.boton-mini {
+  padding: .2rem .55rem;
+  font-size: .78rem;
+  border: 1px solid var(--gris-borde);
+  border-radius: 4px;
+  background: var(--blanco);
+  cursor: pointer;
+  margin-right: .25rem;
+  font-family: inherit;
+}
+.boton-mini:hover { background: #eef1f5; }
+.boton-borrar { color: var(--rojo); border-color: #f0c4c1; }
+.boton-borrar:hover { background: #fce8e6; }
+
+.aviso {
+  padding: .7rem 1rem;
+  border-radius: var(--radio);
+  margin-top: 1rem;
+  font-size: .87rem;
+  border: 1px solid;
+}
+.aviso-error { background: #fce8e6; color: var(--rojo);  border-color: #f0c4c1; }
+.aviso-ok    { background: #e3f3e9; color: var(--verde); border-color: #bfe0cc; }
+
+.aviso.flotante {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  z-index: 100; max-width: 420px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.2);
+  margin-top: 0;
+}
+
+/* ---------- 9. PANTALLAS PEQUENAS ---------- */
+@media (max-width: 800px) {
+  .barra-superior { flex-wrap: wrap; height: auto; padding: .6rem 1rem; }
+  .menu { order: 3; width: 100%; }
+  .contenido { padding: 1rem; }
+  .rejilla { grid-template-columns: 1fr; }
+}

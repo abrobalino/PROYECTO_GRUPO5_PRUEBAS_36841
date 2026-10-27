@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classic Models - Acceso</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body class="pagina-acceso">
+
+  <div class="tarjeta-acceso">
+    <header class="cabecera-acceso">
+      <h1>Classic Models</h1>
+      <p>Sistema de Gestion Comercial</p>
+    </header>
+
+    <!-- ================= FORMULARIO DE LOGIN ================= -->
+    <section id="seccion-login">
+      <h2>Iniciar sesion</h2>
+
+      <div class="campo">
+        <label for="login-usuario">Usuario</label>
+        <input type="text" id="login-usuario" placeholder="admin" autocomplete="username">
+      </div>
+
+      <div class="campo">
+        <label for="login-password">Contrasena</label>
+        <input type="password" id="login-password" placeholder="********" autocomplete="current-password">
+      </div>
+
+      <button class="boton boton-principal" onclick="iniciarSesion()">Entrar</button>
+
+      <p class="enlace">
+        No tiene cuenta?
+        <a href="#" onclick="cambiarVista('registro'); return false;">Registrarse</a>
+      </p>
+    </section>
+
+    <!-- ================= FORMULARIO DE REGISTRO ================= -->
+    <section id="seccion-registro" class="oculto">
+      <h2>Registrar usuario</h2>
+
+      <div class="campo">
+        <label for="reg-usuario">Usuario</label>
+        <input type="text" id="reg-usuario" placeholder="Minimo 4 caracteres">
+      </div>
+
+      <div class="campo">
+        <label for="reg-password">Contrasena</label>
+        <input type="password" id="reg-password" placeholder="Minimo 6 caracteres">
+      </div>
+
+      <div class="campo">
+        <label for="reg-rol">Rol</label>
+        <select id="reg-rol">
+          <option value="VENDEDOR">Vendedor</option>
+          <option value="ADMIN">Administrador</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="reg-empleado">Codigo de empleado (opcional)</label>
+        <input type="number" id="reg-empleado" placeholder="Ej: 1370">
+      </div>
+
+      <button class="boton boton-principal" onclick="registrarUsuario()">Crear cuenta</button>
+
+      <p class="enlace">
+        Ya tiene cuenta?
+        <a href="#" onclick="cambiarVista('login'); return false;">Iniciar sesion</a>
+      </p>
+    </section>
+
+    <div id="aviso" class="aviso oculto"></div>
+
+    <footer class="pie-acceso">
+      Usuarios de prueba: <strong>admin / admin123</strong>
+    </footer>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>
