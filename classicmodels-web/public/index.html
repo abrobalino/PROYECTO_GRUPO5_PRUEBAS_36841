@@ -3,82 +3,262 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Classic Models - Acceso</title>
+  <title>Taller Mecanico</title>
   <link rel="stylesheet" href="css/estilos.css">
 </head>
-<body class="pagina-acceso">
+<body>
 
-  <div class="tarjeta-acceso">
-    <header class="cabecera-acceso">
-      <h1>Classic Models</h1>
-      <p>Sistema de Gestion Comercial</p>
-    </header>
+<!-- ===================== BARRA SUPERIOR ===================== -->
+<header class="barra-superior">
+  <div class="marca">Taller Mecanico</div>
+  <nav class="menu">
+    <button class="boton-menu activo" data-seccion="inicio">Inicio</button>
+    <button class="boton-menu" data-seccion="ordenes">Ordenes</button>
+    <button class="boton-menu" data-seccion="clientes">Clientes</button>
+    <button class="boton-menu" data-seccion="vehiculos">Vehiculos</button>
+    <button class="boton-menu" data-seccion="servicios">Servicios</button>
+    <button class="boton-menu" data-seccion="mecanicos">Mecanicos</button>
+    <button class="boton-menu" data-seccion="consultas">Consultas</button>
+  </nav>
+</header>
 
-    <!-- ================= FORMULARIO DE LOGIN ================= -->
-    <section id="seccion-login">
-      <h2>Iniciar sesion</h2>
+<main class="contenido">
 
-      <div class="campo">
-        <label for="login-usuario">Usuario</label>
-        <input type="text" id="login-usuario" placeholder="admin" autocomplete="username">
+  <!-- ===================== INICIO ===================== -->
+  <section id="inicio" class="seccion">
+    <h1>Panel principal</h1>
+    <p class="subtitulo">Resumen general del taller</p>
+
+    <div class="tarjetas" id="tarjetas-resumen"></div>
+
+    <h2>Ordenes sin entregar</h2>
+    <div id="tabla-inicio" class="contenedor-tabla"></div>
+  </section>
+
+  <!-- ===================== ORDENES DE TRABAJO ===================== -->
+  <section id="ordenes" class="seccion oculto">
+    <h1>Ordenes de trabajo</h1>
+    <p class="subtitulo">Cada orden lleva su detalle de servicios adentro</p>
+
+    <div class="barra-acciones">
+      <input type="text" id="buscar-orden" placeholder="Numero, placa, cliente o mecanico...">
+      <select id="filtro-estado">
+        <option value="">Todos los estados</option>
+        <option>PENDIENTE</option>
+        <option>EN PROCESO</option>
+        <option>TERMINADA</option>
+        <option>ENTREGADA</option>
+      </select>
+      <button class="boton" onclick="cargarOrdenes()">Buscar</button>
+      <button class="boton boton-principal" onclick="abrirFormularioOrden()">Nueva orden</button>
+    </div>
+
+    <div id="formulario-orden" class="formulario oculto">
+      <h3 id="titulo-formulario-orden">Nueva orden</h3>
+      <input type="hidden" id="ord-numero">
+
+      <div class="rejilla">
+        <div class="campo"><label>Cliente *</label><select id="ord-cliente" onchange="llenarVehiculosDeCliente()"></select></div>
+        <div class="campo"><label>Vehiculo *</label><select id="ord-placa"></select></div>
+        <div class="campo"><label>Mecanico *</label><select id="ord-mecanico"></select></div>
+        <div class="campo"><label>Fecha *</label><input type="date" id="ord-fecha"></div>
+        <div class="campo"><label>Estado *</label>
+          <select id="ord-estado">
+            <option>PENDIENTE</option>
+            <option>EN PROCESO</option>
+            <option>TERMINADA</option>
+            <option>ENTREGADA</option>
+          </select>
+        </div>
+        <div class="campo ancho-completo"><label>Observaciones</label><input type="text" id="ord-observaciones"></div>
       </div>
 
-      <div class="campo">
-        <label for="login-password">Contrasena</label>
-        <input type="password" id="login-password" placeholder="********" autocomplete="current-password">
+      <h4 class="titulo-detalle">Servicios de la orden</h4>
+      <div class="barra-acciones">
+        <select id="ord-servicio"></select>
+        <input type="number" id="ord-cantidad" value="1" min="1" class="corto">
+        <button class="boton" onclick="agregarLineaOrden()">Agregar servicio</button>
+      </div>
+      <div id="detalle-orden" class="contenedor-tabla"></div>
+      <p class="total-orden">Total: <strong id="ord-total">$0,00</strong></p>
+
+      <div class="acciones-formulario">
+        <button class="boton boton-principal" onclick="guardarOrden()">Guardar</button>
+        <button class="boton" onclick="cerrarFormularioOrden()">Cancelar</button>
+      </div>
+    </div>
+
+    <div id="tabla-ordenes" class="contenedor-tabla"></div>
+  </section>
+
+  <!-- ===================== CLIENTES ===================== -->
+  <section id="clientes" class="seccion oculto">
+    <h1>Clientes</h1>
+    <p class="subtitulo">Duenos de los vehiculos que atiende el taller</p>
+
+    <div class="barra-acciones">
+      <input type="text" id="buscar-cliente" placeholder="Buscar por nombre o cedula...">
+      <button class="boton" onclick="cargarClientes()">Buscar</button>
+      <button class="boton boton-principal" onclick="abrirFormularioCliente()">Nuevo cliente</button>
+    </div>
+
+    <div id="formulario-cliente" class="formulario oculto">
+      <h3 id="titulo-formulario-cliente">Nuevo cliente</h3>
+
+      <div class="rejilla">
+        <div class="campo"><label>Cedula *</label><input type="text" id="cli-cedula" maxlength="10" placeholder="10 digitos"></div>
+        <div class="campo"><label>Nombres *</label><input type="text" id="cli-nombres"></div>
+        <div class="campo"><label>Telefono *</label><input type="text" id="cli-telefono" maxlength="10" placeholder="Ej: 0991234567"></div>
+        <div class="campo"><label>Email *</label><input type="email" id="cli-email"></div>
+        <div class="campo ancho-completo"><label>Direccion *</label><input type="text" id="cli-direccion"></div>
       </div>
 
-      <button class="boton boton-principal" onclick="iniciarSesion()">Entrar</button>
+      <div class="acciones-formulario">
+        <button class="boton boton-principal" onclick="guardarCliente()">Guardar</button>
+        <button class="boton" onclick="cerrarFormularioCliente()">Cancelar</button>
+      </div>
+    </div>
 
-      <p class="enlace">
-        No tiene cuenta?
-        <a href="#" onclick="cambiarVista('registro'); return false;">Registrarse</a>
-      </p>
-    </section>
+    <div id="tabla-clientes" class="contenedor-tabla"></div>
+  </section>
 
-    <!-- ================= FORMULARIO DE REGISTRO ================= -->
-    <section id="seccion-registro" class="oculto">
-      <h2>Registrar usuario</h2>
+  <!-- ===================== VEHICULOS ===================== -->
+  <section id="vehiculos" class="seccion oculto">
+    <h1>Vehiculos</h1>
+    <p class="subtitulo">Cada vehiculo pertenece a un cliente</p>
 
-      <div class="campo">
-        <label for="reg-usuario">Usuario</label>
-        <input type="text" id="reg-usuario" placeholder="Minimo 4 caracteres">
+    <div class="barra-acciones">
+      <input type="text" id="buscar-vehiculo" placeholder="Placa, marca o modelo...">
+      <button class="boton" onclick="cargarVehiculos()">Buscar</button>
+      <button class="boton boton-principal" onclick="abrirFormularioVehiculo()">Nuevo vehiculo</button>
+    </div>
+
+    <div id="formulario-vehiculo" class="formulario oculto">
+      <h3 id="titulo-formulario-vehiculo">Nuevo vehiculo</h3>
+
+      <div class="rejilla">
+        <div class="campo"><label>Placa *</label><input type="text" id="veh-placa" placeholder="Ej: PBA-1234"></div>
+        <div class="campo"><label>Marca *</label><input type="text" id="veh-marca"></div>
+        <div class="campo"><label>Modelo *</label><input type="text" id="veh-modelo"></div>
+        <div class="campo"><label>Anio *</label><input type="number" id="veh-anio"></div>
+        <div class="campo"><label>Cliente dueno *</label><select id="veh-cliente"></select></div>
       </div>
 
-      <div class="campo">
-        <label for="reg-password">Contrasena</label>
-        <input type="password" id="reg-password" placeholder="Minimo 6 caracteres">
+      <div class="acciones-formulario">
+        <button class="boton boton-principal" onclick="guardarVehiculo()">Guardar</button>
+        <button class="boton" onclick="cerrarFormularioVehiculo()">Cancelar</button>
+      </div>
+    </div>
+
+    <div id="tabla-vehiculos" class="contenedor-tabla"></div>
+  </section>
+
+  <!-- ===================== SERVICIOS ===================== -->
+  <section id="servicios" class="seccion oculto">
+    <h1>Servicios</h1>
+    <p class="subtitulo">Catalogo de trabajos con precio y duracion</p>
+
+    <div class="barra-acciones">
+      <input type="text" id="buscar-servicio" placeholder="Buscar por nombre o codigo...">
+      <button class="boton" onclick="cargarServicios()">Buscar</button>
+      <button class="boton boton-principal" onclick="abrirFormularioServicio()">Nuevo servicio</button>
+    </div>
+
+    <div id="formulario-servicio" class="formulario oculto">
+      <h3 id="titulo-formulario-servicio">Nuevo servicio</h3>
+      <input type="hidden" id="srv-codigo">
+
+      <div class="rejilla">
+        <div class="campo"><label>Nombre *</label><input type="text" id="srv-nombre"></div>
+        <div class="campo"><label>Precio ($) *</label><input type="number" step="0.01" id="srv-precio"></div>
+        <div class="campo"><label>Duracion (minutos) *</label><input type="number" id="srv-duracion"></div>
+        <div class="campo ancho-completo"><label>Descripcion</label><input type="text" id="srv-descripcion"></div>
       </div>
 
-      <div class="campo">
-        <label for="reg-rol">Rol</label>
-        <select id="reg-rol">
-          <option value="VENDEDOR">Vendedor</option>
-          <option value="ADMIN">Administrador</option>
-        </select>
+      <div class="acciones-formulario">
+        <button class="boton boton-principal" onclick="guardarServicio()">Guardar</button>
+        <button class="boton" onclick="cerrarFormularioServicio()">Cancelar</button>
+      </div>
+    </div>
+
+    <div id="tabla-servicios" class="contenedor-tabla"></div>
+  </section>
+
+  <!-- ===================== MECANICOS ===================== -->
+  <section id="mecanicos" class="seccion oculto">
+    <h1>Mecanicos</h1>
+    <p class="subtitulo">Personal del taller y sus cuentas de acceso</p>
+
+    <div class="barra-acciones">
+      <input type="text" id="buscar-mecanico" placeholder="Nombre o especialidad...">
+      <button class="boton" onclick="cargarMecanicos()">Buscar</button>
+      <button class="boton boton-principal" onclick="abrirFormularioMecanico()">Nuevo mecanico</button>
+    </div>
+
+    <div id="formulario-mecanico" class="formulario oculto">
+      <h3 id="titulo-formulario-mecanico">Nuevo mecanico</h3>
+      <input type="hidden" id="mec-id">
+
+      <div class="rejilla">
+        <div class="campo"><label>Nombres *</label><input type="text" id="mec-nombres"></div>
+        <div class="campo"><label>Especialidad *</label><input type="text" id="mec-especialidad"></div>
+        <div class="campo"><label>Usuario *</label><input type="text" id="mec-usuario"></div>
+        <div class="campo"><label id="etiqueta-mec-password">Contrasena *</label><input type="password" id="mec-password"></div>
+        <div class="campo"><label>Rol *</label>
+          <select id="mec-rol">
+            <option value="MECANICO">Mecanico</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </div>
+        <div class="campo"><label>Activo</label>
+          <select id="mec-activo">
+            <option value="true">Si</option>
+            <option value="false">No</option>
+          </select>
+        </div>
       </div>
 
-      <div class="campo">
-        <label for="reg-empleado">Codigo de empleado (opcional)</label>
-        <input type="number" id="reg-empleado" placeholder="Ej: 1370">
+      <div class="acciones-formulario">
+        <button class="boton boton-principal" onclick="guardarMecanico()">Guardar</button>
+        <button class="boton" onclick="cerrarFormularioMecanico()">Cancelar</button>
       </div>
+    </div>
 
-      <button class="boton boton-principal" onclick="registrarUsuario()">Crear cuenta</button>
+    <div id="tabla-mecanicos" class="contenedor-tabla"></div>
+  </section>
 
-      <p class="enlace">
-        Ya tiene cuenta?
-        <a href="#" onclick="cambiarVista('login'); return false;">Iniciar sesion</a>
-      </p>
-    </section>
+  <!-- ===================== CONSULTAS ===================== -->
+  <section id="consultas" class="seccion oculto">
+    <h1>Consultas</h1>
+    <p class="subtitulo">Busquedas con parametros</p>
 
-    <div id="aviso" class="aviso oculto"></div>
+    <div class="panel">
+      <h3>Ordenes por cliente</h3>
+      <p class="ayuda">Historial de ordenes de todos los vehiculos de un cliente</p>
+      <div class="barra-acciones">
+        <input type="text" id="consulta-cliente" maxlength="10" placeholder="Cedula (vacio = todos)">
+        <button class="boton boton-principal" onclick="consultarOrdenesCliente()">Consultar</button>
+      </div>
+      <div id="tabla-consulta-cliente" class="contenedor-tabla"></div>
+    </div>
 
-    <footer class="pie-acceso">
-      Usuarios de prueba: <strong>admin / admin123</strong>
-    </footer>
-  </div>
+    <div class="panel">
+      <h3>Ordenes por fechas</h3>
+      <p class="ayuda">Ordenes registradas entre dos fechas</p>
+      <div class="barra-acciones">
+        <label>Desde</label><input type="date" id="consulta-desde" value="2026-09-01">
+        <label>Hasta</label><input type="date" id="consulta-hasta" value="2026-09-30">
+        <button class="boton boton-principal" onclick="consultarOrdenesFechas()">Consultar</button>
+      </div>
+      <div id="tabla-consulta-fechas" class="contenedor-tabla"></div>
+    </div>
+  </section>
 
-  <script src="js/api.js"></script>
-  <script src="js/login.js"></script>
+</main>
+
+<div id="aviso" class="aviso flotante oculto"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

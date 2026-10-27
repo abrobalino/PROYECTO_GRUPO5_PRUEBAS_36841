@@ -2,14 +2,13 @@
    estilos.css  -  Hoja de estilos unica del sistema
    Organizada en secciones:
      1. Variables y reinicio
-     2. Pagina de acceso (login / registro)
-     3. Barra superior y menu
-     4. Contenido y secciones
-     5. Tarjetas de resumen
-     6. Formularios
-     7. Tablas
-     8. Botones y avisos
-     9. Adaptacion a pantallas pequenas
+     2. Barra superior y menu
+     3. Contenido y secciones
+     4. Tarjetas de resumen
+     5. Formularios
+     6. Tablas
+     7. Botones y avisos
+     8. Adaptacion a pantallas pequenas
    ========================================================================== */
 
 /* ---------- 1. VARIABLES Y REINICIO ---------- */
@@ -39,42 +38,7 @@ body {
 
 .oculto { display: none !important; }
 
-/* ---------- 2. PAGINA DE ACCESO ---------- */
-.pagina-acceso {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--azul) 0%, #0e2d47 100%);
-  padding: 1rem;
-}
-
-.tarjeta-acceso {
-  background: var(--blanco);
-  width: 100%;
-  max-width: 400px;
-  border-radius: 10px;
-  padding: 2rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
-}
-
-.cabecera-acceso { text-align: center; margin-bottom: 1.5rem; }
-.cabecera-acceso h1 { color: var(--azul); font-size: 1.6rem; }
-.cabecera-acceso p  { color: var(--gris-texto); font-size: .85rem; }
-
-.tarjeta-acceso h2 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--azul); }
-
-.enlace { text-align: center; margin-top: 1rem; font-size: .85rem; color: var(--gris-texto); }
-.enlace a { color: var(--azul-claro); text-decoration: none; font-weight: 600; }
-.enlace a:hover { text-decoration: underline; }
-
-.pie-acceso {
-  margin-top: 1.5rem; padding-top: 1rem;
-  border-top: 1px solid var(--gris-borde);
-  text-align: center; font-size: .75rem; color: var(--gris-texto);
-}
-
-/* ---------- 3. BARRA SUPERIOR Y MENU ---------- */
+/* ---------- 2. BARRA SUPERIOR Y MENU ---------- */
 .barra-superior {
   background: var(--azul);
   color: var(--blanco);
@@ -104,9 +68,8 @@ body {
 .boton-menu:hover  { background: rgba(255,255,255,.12); color: #fff; }
 .boton-menu.activo { background: rgba(255,255,255,.2);  color: #fff; font-weight: 600; }
 
-.usuario { display: flex; align-items: center; gap: .75rem; font-size: .85rem; white-space: nowrap; }
 
-/* ---------- 4. CONTENIDO Y SECCIONES ---------- */
+/* ---------- 3. CONTENIDO Y SECCIONES ---------- */
 .contenido { max-width: 1280px; margin: 0 auto; padding: 1.5rem; }
 
 .seccion h1 { font-size: 1.5rem; color: var(--azul); }
@@ -128,7 +91,7 @@ body {
   border-radius: 3px; font-size: .78rem;
 }
 
-/* ---------- 5. TARJETAS DE RESUMEN ---------- */
+/* ---------- 4. TARJETAS DE RESUMEN ---------- */
 .tarjetas {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -145,7 +108,7 @@ body {
 .tarjeta .valor    { font-size: 1.7rem; font-weight: 700; color: var(--azul); }
 .tarjeta .etiqueta { font-size: .8rem;  color: var(--gris-texto); text-transform: uppercase; }
 
-/* ---------- 6. FORMULARIOS ---------- */
+/* ---------- 5. FORMULARIOS ---------- */
 .campo { margin-bottom: .9rem; }
 .campo label { display: block; font-size: .8rem; font-weight: 600; margin-bottom: .3rem; color: var(--gris-texto); }
 
@@ -188,9 +151,7 @@ input:focus, select:focus { outline: 2px solid var(--azul-claro); outline-offset
 .barra-acciones input, .barra-acciones select { width: auto; min-width: 180px; }
 .barra-acciones label { font-size: .85rem; color: var(--gris-texto); }
 
-.pestanas { gap: .35rem; }
-
-/* ---------- 7. TABLAS ---------- */
+/* ---------- 6. TABLAS ---------- */
 .contenedor-tabla {
   background: var(--blanco);
   border: 1px solid var(--gris-borde);
@@ -222,6 +183,13 @@ td.numero { text-align: right; font-variant-numeric: tabular-nums; }
 
 .contador { font-size: .8rem; color: var(--gris-texto); margin-bottom: .5rem; }
 
+td.acciones { white-space: nowrap; }
+
+/* Detalle de servicios dentro del formulario de la orden */
+.titulo-detalle { color: var(--azul); font-size: .95rem; margin: .5rem 0 .75rem; }
+.barra-acciones input.corto { min-width: 0; width: 80px; }
+.total-orden { text-align: right; margin: .75rem 0; font-size: 1rem; color: var(--azul); }
+
 /* Etiquetas de estado dentro de las tablas */
 .etiqueta {
   display: inline-block; padding: .12rem .5rem;
@@ -231,7 +199,7 @@ td.numero { text-align: right; font-variant-numeric: tabular-nums; }
 .et-ambar { background: #fdf0d5; color: var(--ambar); }
 .et-verde { background: #e3f3e9; color: var(--verde); }
 
-/* ---------- 8. BOTONES Y AVISOS ---------- */
+/* ---------- 7. BOTONES Y AVISOS ---------- */
 .boton {
   padding: .5rem 1rem;
   border: 1px solid var(--gris-borde);
@@ -252,27 +220,6 @@ td.numero { text-align: right; font-variant-numeric: tabular-nums; }
   width: auto;
 }
 .boton-principal:hover { background: var(--azul-claro); }
-
-.tarjeta-acceso .boton-principal { width: 100%; padding: .7rem; margin-top: .5rem; }
-
-.boton-salir {
-  background: rgba(255,255,255,.15);
-  border-color: rgba(255,255,255,.3);
-  color: var(--blanco);
-  padding: .35rem .8rem;
-}
-.boton-salir:hover { background: rgba(255,255,255,.25); }
-
-.boton-reporte {
-  padding: .45rem .85rem;
-  border: 1px solid var(--gris-borde);
-  border-radius: var(--radio);
-  background: var(--blanco);
-  cursor: pointer;
-  font-size: .85rem;
-  font-family: inherit;
-}
-.boton-reporte.activo { background: var(--azul); color: var(--blanco); border-color: var(--azul); }
 
 .boton-mini {
   padding: .2rem .55rem;
@@ -305,7 +252,7 @@ td.numero { text-align: right; font-variant-numeric: tabular-nums; }
   margin-top: 0;
 }
 
-/* ---------- 9. PANTALLAS PEQUENAS ---------- */
+/* ---------- 8. PANTALLAS PEQUENAS ---------- */
 @media (max-width: 800px) {
   .barra-superior { flex-wrap: wrap; height: auto; padding: .6rem 1rem; }
   .menu { order: 3; width: 100%; }

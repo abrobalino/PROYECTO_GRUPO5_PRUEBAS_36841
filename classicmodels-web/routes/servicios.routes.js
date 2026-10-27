@@ -1,11 +1,8 @@
-// Rutas del CRUD de productos:  /api/productos/...
+// Rutas del CRUD de servicios:  /api/servicios/...
 const express = require('express');
-const c = require('../controllers/productos.controller');
-const { requiereLogin } = require('../middleware/auth');
+const c = require('../controllers/servicios.controller');
 
 const router = express.Router();
-
-router.use(requiereLogin);
 
 router.get   ('/',        c.listar);
 router.post  ('/',        c.crear);

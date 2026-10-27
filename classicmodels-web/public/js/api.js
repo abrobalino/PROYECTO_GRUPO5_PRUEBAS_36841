@@ -17,12 +17,6 @@ const API = {
 
     try {
       const respuesta = await fetch(ruta, opciones);
-
-      // 401 = la sesion caduco: se vuelve a la pantalla de acceso
-      if (respuesta.status === 401 && !ruta.includes('/auth/')) {
-        window.location.href = 'index.html';
-        return { ok: false, mensaje: 'Sesion expirada' };
-      }
       return await respuesta.json();
 
     } catch (e) {
@@ -44,8 +38,7 @@ function avisar(texto, esError = false) {
   if (!caja) { alert(texto); return; }
 
   caja.textContent = texto;
-  caja.className = 'aviso ' + (esError ? 'aviso-error' : 'aviso-ok') +
-                   (document.body.classList.contains('pagina-acceso') ? '' : ' flotante');
+  caja.className = 'aviso flotante ' + (esError ? 'aviso-error' : 'aviso-ok');
 
   clearTimeout(window._temporizadorAviso);
   window._temporizadorAviso = setTimeout(() => caja.classList.add('oculto'), 5000);

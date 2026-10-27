@@ -2,39 +2,21 @@
 // app.js  -  APLICACION PRINCIPAL
 // ===========================================================================
 // Organizado en bloques:
-//   1. Arranque y sesion
+//   1. Arranque
 //   2. Navegacion entre secciones
 //   3. Utilidades para dibujar tablas
 //   4. Inicio (resumen)
-//   5. Clientes  (CRUD)
-//   6. Productos (CRUD)
-//   7. Consultas
-//   8. Reportes
+//   5. Ordenes de trabajo (CRUD con detalle)
+//   6. Clientes  (CRUD)
+//   7. Vehiculos (CRUD)
+//   8. Servicios (CRUD)
+//   9. Mecanicos (CRUD)
+//  10. Consultas
 // ===========================================================================
 
-const LINEAS = ['Classic Cars','Motorcycles','Planes','Ships','Trains',
-                'Trucks and Buses','Vintage Cars'];
-
-// ---------- 1. ARRANQUE Y SESION -------------------------------------------
-document.addEventListener('DOMContentLoaded', async () => {
-  const s = await API.get('/api/auth/sesion');
-
-  if (!s.ok) {                       // sin sesion -> volver al login
-    window.location.href = 'index.html';
-    return;
-  }
-
-  document.getElementById('etiqueta-usuario').textContent =
-    s.usuario.nombre + ' (' + s.usuario.rol + ')';
-
-  llenarSelectoresDeLinea();
-  cargarInicio();
-});
-
-async function cerrarSesion() {
-  await API.post('/api/auth/logout');
-  window.location.href = 'index.html';
-}
+// ---------- 1. ARRANQUE -----------------------------------------------------
+// No hay inicio de sesion: la aplicacion abre directamente en el panel.
+document.addEventListener('DOMContentLoaded', cargarInicio);
 
 // ---------- 2. NAVEGACION ---------------------------------------------------
 document.querySelectorAll('.boton-menu').forEach(boton => {
@@ -47,16 +29,27 @@ document.querySelectorAll('.boton-menu').forEach(boton => {
     document.getElementById(destino).classList.remove('oculto');
 
     if (destino === 'inicio')    cargarInicio();
+    if (destino === 'ordenes')   cargarOrdenes();
     if (destino === 'clientes')  cargarClientes();
-    if (destino === 'productos') cargarProductos();
-    if (destino === 'reportes')  cargarReporte('por-cliente');
+    if (destino === 'vehiculos') cargarVehiculos();
+    if (destino === 'servicios') cargarServicios();
+    if (destino === 'mecanicos') cargarMecanicos();
   });
 });
 
 // ---------- 3. UTILIDADES DE TABLA ------------------------------------------
+// Evita que un texto con < o " rompa el HTML
+function escapar(t) {
+  return String(t).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+const dinero = n => '$' + Number(n || 0).toLocaleString('es-EC',
+  { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 // Dibuja una tabla a partir de un arreglo de objetos. Las columnas se deducen
 // de las claves del primer registro, asi la misma funcion sirve para todas las
-// consultas y reportes.
+// pantallas y consultas.
 function dibujarTabla(destino, filas, acciones = null) {
   const caja = document.getElementById(destino);
 
@@ -79,7 +72,7 @@ function dibujarTabla(destino, filas, acciones = null) {
       const esNumero = typeof v === 'number';
       html += '<td class="' + (esNumero ? 'numero' : '') + '">' + formatear(v, c) + '</td>';
     });
-    if (acciones) html += '<td>' + acciones(fila) + '</td>';
+    if (acciones) html += '<td class="acciones">' + acciones(fila) + '</td>';
     html += '</tr>';
   });
 
@@ -87,130 +80,289 @@ function dibujarTabla(destino, filas, acciones = null) {
   caja.innerHTML = '<p class="contador">' + filas.length + ' registro(s)</p>' + html;
 }
 
+// Columnas que se muestran como dinero
+const COLUMNAS_DINERO = ['precio', 'total', 'monto', 'ingresos', 'total_facturado', 'subtotal'];
+
 // Da formato a los valores segun su tipo o el nombre de la columna
 function formatear(valor, columna) {
   if (valor === null || valor === undefined || valor === '') return '-';
 
-  // Fechas: llegan como texto ISO desde el JSON
-  if (typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(valor)) {
-    return new Date(valor).toLocaleDateString('es-EC');
-  }
-
   // Etiquetas de color para las columnas de estado
-  const c = columna.toUpperCase();
-  if (c === 'NIVEL_ALERTA' || c === 'SITUACION') {
-    const clase = ['AGOTADO','CRITICO','EXCEDE CREDITO'].includes(valor) ? 'et-rojo'
-                : ['BAJO','CON SALDO'].includes(valor)                    ? 'et-ambar'
+  if (columna === 'estado') {
+    const clase = ['PENDIENTE', 'INACTIVO'].includes(valor) ? 'et-rojo'
+                : ['EN PROCESO', 'TERMINADA'].includes(valor) ? 'et-ambar'
                 : 'et-verde';
-    return '<span class="etiqueta ' + clase + '">' + valor + '</span>';
+    return '<span class="etiqueta ' + clase + '">' + escapar(valor) + '</span>';
   }
 
-  if (typeof valor === 'number' && !Number.isInteger(valor)) {
-    return valor.toLocaleString('es-EC', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-  return valor;
+  if (COLUMNAS_DINERO.includes(columna)) return dinero(valor);
+  return escapar(valor);
 }
 
-function llenarSelectoresDeLinea() {
-  const opciones = LINEAS.map(l => '<option value="' + l + '">' + l + '</option>').join('');
-  document.getElementById('pro-linea').innerHTML = opciones;
-  document.getElementById('filtro-linea').innerHTML =
-    '<option value="">Todas las lineas</option>' + opciones;
+// Llena un <select> con opciones { valor, texto }
+function llenarSelect(id, opciones, vacio = null) {
+  document.getElementById(id).innerHTML =
+    (vacio ? '<option value="">' + vacio + '</option>' : '') +
+    opciones.map(o => '<option value="' + escapar(o.valor) + '">' + escapar(o.texto) + '</option>').join('');
+}
+
+const botones = (editar, borrar, clave) =>
+  '<button class="boton-mini" onclick="' + editar + '(\'' + clave + '\')">Editar</button>' +
+  '<button class="boton-mini boton-borrar" onclick="' + borrar + '(\'' + clave + '\')">Borrar</button>';
+
+const valor = id => document.getElementById(id).value.trim();
+
+function mostrarFormulario(id) {
+  document.getElementById(id).classList.remove('oculto');
+  window.scrollTo(0, 0);
 }
 
 // ---------- 4. INICIO -------------------------------------------------------
 async function cargarInicio() {
-  const [clientes, productos, stock, oficinas] = await Promise.all([
+  const [clientes, vehiculos, ordenes] = await Promise.all([
     API.get('/api/clientes'),
-    API.get('/api/productos'),
-    API.get('/api/reportes/vista/stock-critico'),
-    API.get('/api/reportes/vista/por-oficina')
+    API.get('/api/vehiculos'),
+    API.get('/api/ordenes')
   ]);
 
-  const totalVentas = (oficinas.datos || [])
-    .reduce((suma, o) => suma + Number(o.TOTAL_VENTAS || 0), 0);
+  // Ordenes sin entregar, de la mas antigua a la mas reciente
+  const pendientes = (ordenes.datos || [])
+    .filter(o => o.estado !== 'ENTREGADA')
+    .sort((a, b) => a.fecha.localeCompare(b.fecha))
+    .map(o => ({
+      numero: o.numero, fecha: o.fecha, placa: o.placa, vehiculo: o.vehiculo,
+      cliente: o.cliente, mecanico: o.mecanico, estado: o.estado, total: o.total
+    }));
+
+  const facturado = (ordenes.datos || [])
+    .filter(o => o.estado === 'ENTREGADA')
+    .reduce((suma, o) => suma + o.total, 0);
 
   const tarjetas = [
-    { etiqueta: 'Clientes',        valor: (clientes.datos  || []).length },
-    { etiqueta: 'Productos',       valor: (productos.datos || []).length },
-    { etiqueta: 'Stock bajo',      valor: (stock.datos     || []).length },
-    { etiqueta: 'Ventas totales',  valor: '$' + Math.round(totalVentas).toLocaleString('es-EC') }
+    { etiqueta: 'Clientes',          valor: (clientes.datos   || []).length },
+    { etiqueta: 'Vehiculos',         valor: (vehiculos.datos  || []).length },
+    { etiqueta: 'Ordenes abiertas',  valor: pendientes.length },
+    { etiqueta: 'Facturado (entregadas)', valor: dinero(facturado) }
   ];
 
   document.getElementById('tarjetas-resumen').innerHTML = tarjetas.map(t =>
     '<div class="tarjeta"><div class="valor">' + t.valor + '</div>' +
     '<div class="etiqueta">' + t.etiqueta + '</div></div>').join('');
 
-  dibujarTabla('tabla-inicio', oficinas.datos);
+  dibujarTabla('tabla-inicio', pendientes);
 }
 
-// ---------- 5. CLIENTES -----------------------------------------------------
+// ---------- 5. ORDENES DE TRABAJO -------------------------------------------
+// Mientras se edita, el detalle vive en este arreglo y se dibuja en pantalla.
+let detalleEnEdicion = [];
+let catalogo = { clientes: [], vehiculos: [], mecanicos: [], servicios: [] };
+
+async function cargarOrdenes() {
+  const busqueda = valor('buscar-orden');
+  const estado   = valor('filtro-estado');
+
+  const parametros = [];
+  if (busqueda) parametros.push('busqueda=' + encodeURIComponent(busqueda));
+  if (estado)   parametros.push('estado='   + encodeURIComponent(estado));
+
+  const r = await API.get('/api/ordenes' + (parametros.length ? '?' + parametros.join('&') : ''));
+  if (!r.ok) return avisar(r.mensaje, true);
+
+  window._ordenes = r.datos;
+
+  const filas = r.datos.map(o => ({
+    numero: o.numero, fecha: o.fecha, placa: o.placa, vehiculo: o.vehiculo,
+    cliente: o.cliente, mecanico: o.mecanico,
+    servicios: o.detalle.map(d => d.nombre + (d.cantidad > 1 ? ' x' + d.cantidad : '')).join(', '),
+    estado: o.estado, total: o.total
+  }));
+
+  dibujarTabla('tabla-ordenes', filas, f =>
+    f.estado === 'ENTREGADA' ? '<span class="ayuda">Cerrada</span>' : botones('editarOrden', 'eliminarOrden', f.numero));
+}
+
+// Trae clientes, vehiculos, mecanicos activos y servicios para los selects
+async function cargarCatalogoOrden() {
+  const [c, v, m, s] = await Promise.all([
+    API.get('/api/clientes'), API.get('/api/vehiculos'),
+    API.get('/api/mecanicos'), API.get('/api/servicios')
+  ]);
+  catalogo = { clientes: c.datos || [], vehiculos: v.datos || [], mecanicos: m.datos || [], servicios: s.datos || [] };
+
+  llenarSelect('ord-cliente', catalogo.clientes.map(x => ({ valor: x.cedula, texto: x.nombres + ' - ' + x.cedula })), 'Seleccione...');
+  llenarSelect('ord-servicio', catalogo.servicios.map(x => ({ valor: x.codigo, texto: x.nombre + ' (' + dinero(x.precio) + ')' })));
+}
+
+// mecanicoActual se incluye aunque este inactivo, para no perderlo al editar
+function llenarMecanicos(mecanicoActual = null) {
+  llenarSelect('ord-mecanico', catalogo.mecanicos
+    .filter(m => m.activo || m.id === mecanicoActual)
+    .map(m => ({ valor: m.id, texto: m.nombres + ' - ' + m.especialidad })));
+}
+
+function llenarVehiculosDeCliente(placa = null) {
+  const cedula = valor('ord-cliente');
+  const propios = catalogo.vehiculos.filter(v => v.cedulaCliente === cedula);
+  llenarSelect('ord-placa', propios.map(v => ({ valor: v.placa, texto: v.placa + ' - ' + v.marca + ' ' + v.modelo })),
+               propios.length ? null : 'El cliente no tiene vehiculos');
+  if (placa) document.getElementById('ord-placa').value = placa;
+}
+
+async function abrirFormularioOrden() {
+  await cargarCatalogoOrden();
+  llenarMecanicos();
+  document.getElementById('titulo-formulario-orden').textContent = 'Nueva orden';
+  document.getElementById('ord-numero').value        = '';
+  document.getElementById('ord-cliente').value       = '';
+  document.getElementById('ord-fecha').value         = new Date().toISOString().slice(0, 10);
+  document.getElementById('ord-estado').value        = 'PENDIENTE';
+  document.getElementById('ord-observaciones').value = '';
+  document.getElementById('ord-cantidad').value      = 1;
+  llenarVehiculosDeCliente();
+  detalleEnEdicion = [];
+  dibujarDetalle();
+  mostrarFormulario('formulario-orden');
+}
+
+function cerrarFormularioOrden() {
+  document.getElementById('formulario-orden').classList.add('oculto');
+}
+
+async function editarOrden(numero) {
+  const o = (window._ordenes || []).find(x => x.numero === Number(numero));
+  if (!o) return;
+
+  await cargarCatalogoOrden();
+  llenarMecanicos(o.mecanicoId);
+  document.getElementById('titulo-formulario-orden').textContent = 'Editar orden ' + o.numero;
+  document.getElementById('ord-numero').value        = o.numero;
+  document.getElementById('ord-cliente').value       = o.cedulaCliente;
+  llenarVehiculosDeCliente(o.placa);
+  document.getElementById('ord-mecanico').value      = o.mecanicoId;
+  document.getElementById('ord-fecha').value         = o.fecha;
+  document.getElementById('ord-estado').value        = o.estado;
+  document.getElementById('ord-observaciones').value = o.observaciones || '';
+
+  detalleEnEdicion = o.detalle.map(d => ({ ...d }));
+  dibujarDetalle();
+  mostrarFormulario('formulario-orden');
+}
+
+function agregarLineaOrden() {
+  const codigo   = valor('ord-servicio');
+  const cantidad = Number(valor('ord-cantidad'));
+  const s = catalogo.servicios.find(x => x.codigo === codigo);
+
+  if (!s) return avisar('Seleccione un servicio', true);
+  if (!Number.isInteger(cantidad) || cantidad < 1) return avisar('La cantidad debe ser un entero mayor a 0', true);
+
+  const existente = detalleEnEdicion.find(d => d.codigoServicio === codigo);
+  if (existente) existente.cantidad += cantidad;
+  else detalleEnEdicion.push({ codigoServicio: s.codigo, nombre: s.nombre, precio: s.precio, cantidad });
+
+  document.getElementById('ord-cantidad').value = 1;
+  dibujarDetalle();
+}
+
+function quitarLineaOrden(codigo) {
+  detalleEnEdicion = detalleEnEdicion.filter(d => d.codigoServicio !== codigo);
+  dibujarDetalle();
+}
+
+function dibujarDetalle() {
+  const filas = detalleEnEdicion.map(d => ({
+    codigo: d.codigoServicio, servicio: d.nombre, precio: d.precio,
+    cantidad: d.cantidad, subtotal: d.precio * d.cantidad
+  }));
+  dibujarTabla('detalle-orden', filas, f =>
+    '<button class="boton-mini boton-borrar" onclick="quitarLineaOrden(\'' + f.codigo + '\')">Quitar</button>');
+
+  const total = filas.reduce((s, f) => s + f.subtotal, 0);
+  document.getElementById('ord-total').textContent = dinero(total);
+}
+
+async function guardarOrden() {
+  if (!valor('ord-placa')) return avisar('Seleccione un cliente con vehiculo', true);
+
+  const datos = {
+    placa:         valor('ord-placa'),
+    mecanicoId:    Number(valor('ord-mecanico')),
+    fecha:         valor('ord-fecha'),
+    estado:        valor('ord-estado'),
+    observaciones: valor('ord-observaciones'),
+    detalle:       detalleEnEdicion.map(d => ({ codigoServicio: d.codigoServicio, cantidad: d.cantidad }))
+  };
+
+  const numero = valor('ord-numero');
+  const r = numero
+    ? await API.put('/api/ordenes/' + numero, datos)
+    : await API.post('/api/ordenes', datos);
+
+  if (!r.ok) return avisar(r.mensaje, true);
+
+  avisar(r.mensaje);
+  cerrarFormularioOrden();
+  cargarOrdenes();
+}
+
+async function eliminarOrden(numero) {
+  if (!confirm('Eliminar la orden ' + numero + '?')) return;
+
+  const r = await API.borrar('/api/ordenes/' + numero);
+  if (!r.ok) return avisar(r.mensaje, true);
+  avisar(r.mensaje);
+  cargarOrdenes();
+}
+
+// ---------- 6. CLIENTES -----------------------------------------------------
 async function cargarClientes() {
-  const busqueda = document.getElementById('buscar-cliente').value.trim();
+  const busqueda = valor('buscar-cliente');
   const r = await API.get('/api/clientes' + (busqueda ? '?busqueda=' + encodeURIComponent(busqueda) : ''));
 
   if (!r.ok) return avisar(r.mensaje, true);
 
-  dibujarTabla('tabla-clientes', r.datos, fila =>
-    '<button class="boton-mini" onclick="editarCliente(' + fila.CODIGO + ')">Editar</button>' +
-    '<button class="boton-mini boton-borrar" onclick="eliminarCliente(' + fila.CODIGO + ')">Borrar</button>');
-
   window._clientes = r.datos;
+  dibujarTabla('tabla-clientes', r.datos, f => botones('editarCliente', 'eliminarCliente', f.cedula));
 }
 
 function abrirFormularioCliente() {
   document.getElementById('titulo-formulario-cliente').textContent = 'Nuevo cliente';
-  ['cli-codigo','cli-nombre','cli-contactoNom','cli-contactoApe','cli-telefono',
-   'cli-direccion','cli-ciudad','cli-pais','cli-vendedor']
+  ['cli-cedula','cli-nombres','cli-telefono','cli-email','cli-direccion']
     .forEach(id => document.getElementById(id).value = '');
-  document.getElementById('cli-limite').value = 0;
-  document.getElementById('formulario-cliente').classList.remove('oculto');
+  document.getElementById('cli-cedula').disabled = false;
+  mostrarFormulario('formulario-cliente');
 }
 
 function cerrarFormularioCliente() {
   document.getElementById('formulario-cliente').classList.add('oculto');
 }
 
-function editarCliente(codigo) {
-  const c = (window._clientes || []).find(x => x.CODIGO === codigo);
+function editarCliente(cedula) {
+  const c = (window._clientes || []).find(x => x.cedula === cedula);
   if (!c) return;
 
-  document.getElementById('titulo-formulario-cliente').textContent = 'Editar cliente ' + codigo;
-  document.getElementById('cli-codigo').value       = c.CODIGO;
-  document.getElementById('cli-nombre').value       = c.NOMBRE || '';
-  document.getElementById('cli-telefono').value     = c.TELEFONO || '';
-  document.getElementById('cli-ciudad').value       = c.CIUDAD || '';
-  document.getElementById('cli-pais').value         = c.PAIS || '';
-  document.getElementById('cli-vendedor').value     = c.CODIGO_VENDEDOR || '';
-  document.getElementById('cli-limite').value       = c.LIMITE_CREDITO || 0;
-
-  const contacto = (c.CONTACTO || '').split(' ');
-  document.getElementById('cli-contactoNom').value = contacto[0] || '';
-  document.getElementById('cli-contactoApe').value = contacto.slice(1).join(' ');
-  document.getElementById('cli-direccion').value   = '';
-
-  document.getElementById('formulario-cliente').classList.remove('oculto');
-  window.scrollTo(0, 0);
+  document.getElementById('titulo-formulario-cliente').textContent = 'Editar cliente ' + cedula;
+  document.getElementById('cli-cedula').value    = c.cedula;
+  document.getElementById('cli-cedula').disabled = true;      // la clave no se cambia
+  document.getElementById('cli-nombres').value   = c.nombres;
+  document.getElementById('cli-telefono').value  = c.telefono;
+  document.getElementById('cli-email').value     = c.email;
+  document.getElementById('cli-direccion').value = c.direccion;
+  mostrarFormulario('formulario-cliente');
 }
 
 async function guardarCliente() {
-  const v = id => document.getElementById(id).value.trim();
-
+  const editando = document.getElementById('cli-cedula').disabled;
   const datos = {
-    nombre:      v('cli-nombre'),
-    contactoNom: v('cli-contactoNom'),
-    contactoApe: v('cli-contactoApe'),
-    telefono:    v('cli-telefono'),
-    direccion:   v('cli-direccion'),
-    ciudad:      v('cli-ciudad'),
-    pais:        v('cli-pais'),
-    vendedor:    v('cli-vendedor') || null,
-    limite:      v('cli-limite') || 0
+    cedula:    valor('cli-cedula'),
+    nombres:   valor('cli-nombres'),
+    telefono:  valor('cli-telefono'),
+    email:     valor('cli-email'),
+    direccion: valor('cli-direccion')
   };
 
-  const codigo = v('cli-codigo');
-  const r = codigo
-    ? await API.put('/api/clientes/' + codigo, datos)
+  const r = editando
+    ? await API.put('/api/clientes/' + datos.cedula, datos)
     : await API.post('/api/clientes', datos);
 
   if (!r.ok) return avisar(r.mensaje, true);
@@ -220,150 +372,255 @@ async function guardarCliente() {
   cargarClientes();
 }
 
-async function eliminarCliente(codigo) {
-  if (!confirm('Eliminar el cliente ' + codigo + '?')) return;
+async function eliminarCliente(cedula) {
+  if (!confirm('Eliminar el cliente ' + cedula + '?')) return;
 
-  const r = await API.borrar('/api/clientes/' + codigo);
-
-  if (!r.ok) return avisar(r.mensaje, true);   // aqui aparece el error del trigger
+  const r = await API.borrar('/api/clientes/' + cedula);
+  if (!r.ok) return avisar(r.mensaje, true);
   avisar(r.mensaje);
   cargarClientes();
 }
 
-// ---------- 6. PRODUCTOS ----------------------------------------------------
-async function cargarProductos() {
-  const busqueda = document.getElementById('buscar-producto').value.trim();
-  const linea    = document.getElementById('filtro-linea').value;
-
-  const parametros = [];
-  if (busqueda) parametros.push('busqueda=' + encodeURIComponent(busqueda));
-  if (linea)    parametros.push('linea='    + encodeURIComponent(linea));
-
-  const r = await API.get('/api/productos' + (parametros.length ? '?' + parametros.join('&') : ''));
+// ---------- 7. VEHICULOS ----------------------------------------------------
+async function cargarVehiculos() {
+  const busqueda = valor('buscar-vehiculo');
+  const r = await API.get('/api/vehiculos' + (busqueda ? '?busqueda=' + encodeURIComponent(busqueda) : ''));
 
   if (!r.ok) return avisar(r.mensaje, true);
 
-  dibujarTabla('tabla-productos', r.datos, fila =>
-    '<button class="boton-mini" onclick="editarProducto(\'' + fila.CODIGO + '\')">Editar</button>' +
-    '<button class="boton-mini boton-borrar" onclick="eliminarProducto(\'' + fila.CODIGO + '\')">Borrar</button>');
-
-  window._productos = r.datos;
+  window._vehiculos = r.datos;
+  const filas = r.datos.map(v => ({
+    placa: v.placa, marca: v.marca, modelo: v.modelo, anio: v.anio,
+    cedula_cliente: v.cedulaCliente, cliente: v.cliente
+  }));
+  dibujarTabla('tabla-vehiculos', filas, f => botones('editarVehiculo', 'eliminarVehiculo', f.placa));
 }
 
-function abrirFormularioProducto() {
-  document.getElementById('titulo-formulario-producto').textContent = 'Nuevo producto';
-  ['pro-codigo','pro-nombre','pro-escala','pro-proveedor','pro-descripcion',
-   'pro-precioCompra','pro-precioVenta'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('pro-stock').value = 0;
-  document.getElementById('pro-codigo').disabled = false;
-  document.getElementById('formulario-producto').classList.remove('oculto');
+async function llenarClientesVehiculo() {
+  const r = await API.get('/api/clientes');
+  llenarSelect('veh-cliente', (r.datos || []).map(c => ({ valor: c.cedula, texto: c.nombres + ' - ' + c.cedula })), 'Seleccione...');
 }
 
-function cerrarFormularioProducto() {
-  document.getElementById('formulario-producto').classList.add('oculto');
+async function abrirFormularioVehiculo() {
+  await llenarClientesVehiculo();
+  document.getElementById('titulo-formulario-vehiculo').textContent = 'Nuevo vehiculo';
+  ['veh-placa','veh-marca','veh-modelo','veh-anio','veh-cliente']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('veh-placa').disabled = false;
+  mostrarFormulario('formulario-vehiculo');
 }
 
-function editarProducto(codigo) {
-  const p = (window._productos || []).find(x => x.CODIGO === codigo);
-  if (!p) return;
-
-  document.getElementById('titulo-formulario-producto').textContent = 'Editar producto ' + codigo;
-  document.getElementById('pro-codigo').value        = p.CODIGO;
-  document.getElementById('pro-codigo').disabled     = true;      // la clave no se cambia
-  document.getElementById('pro-nombre').value        = p.NOMBRE || '';
-  document.getElementById('pro-linea').value         = p.LINEA || '';
-  document.getElementById('pro-escala').value        = p.ESCALA || '';
-  document.getElementById('pro-proveedor').value     = p.PROVEEDOR || '';
-  document.getElementById('pro-stock').value         = p.STOCK ?? 0;
-  document.getElementById('pro-precioCompra').value  = p.PRECIO_COMPRA ?? '';
-  document.getElementById('pro-precioVenta').value   = p.PRECIO_VENTA ?? '';
-
-  document.getElementById('formulario-producto').classList.remove('oculto');
-  window.scrollTo(0, 0);
+function cerrarFormularioVehiculo() {
+  document.getElementById('formulario-vehiculo').classList.add('oculto');
 }
 
-async function guardarProducto() {
-  const v = id => document.getElementById(id).value.trim();
-  const editando = document.getElementById('pro-codigo').disabled;
+async function editarVehiculo(placa) {
+  const v = (window._vehiculos || []).find(x => x.placa === placa);
+  if (!v) return;
 
+  await llenarClientesVehiculo();
+  document.getElementById('titulo-formulario-vehiculo').textContent = 'Editar vehiculo ' + placa;
+  document.getElementById('veh-placa').value    = v.placa;
+  document.getElementById('veh-placa').disabled = true;
+  document.getElementById('veh-marca').value    = v.marca;
+  document.getElementById('veh-modelo').value   = v.modelo;
+  document.getElementById('veh-anio').value     = v.anio;
+  document.getElementById('veh-cliente').value  = v.cedulaCliente;
+  mostrarFormulario('formulario-vehiculo');
+}
+
+async function guardarVehiculo() {
+  const editando = document.getElementById('veh-placa').disabled;
   const datos = {
-    codigo:       v('pro-codigo'),
-    nombre:       v('pro-nombre'),
-    linea:        v('pro-linea'),
-    escala:       v('pro-escala'),
-    proveedor:    v('pro-proveedor'),
-    descripcion:  v('pro-descripcion'),
-    stock:        v('pro-stock'),
-    precioCompra: v('pro-precioCompra'),
-    precioVenta:  v('pro-precioVenta')
+    placa:         valor('veh-placa').toUpperCase(),
+    marca:         valor('veh-marca'),
+    modelo:        valor('veh-modelo'),
+    anio:          valor('veh-anio'),
+    cedulaCliente: valor('veh-cliente')
   };
 
   const r = editando
-    ? await API.put('/api/productos/' + datos.codigo, datos)
-    : await API.post('/api/productos', datos);
+    ? await API.put('/api/vehiculos/' + datos.placa, datos)
+    : await API.post('/api/vehiculos', datos);
 
   if (!r.ok) return avisar(r.mensaje, true);
 
   avisar(r.mensaje);
-  cerrarFormularioProducto();
-  cargarProductos();
+  cerrarFormularioVehiculo();
+  cargarVehiculos();
 }
 
-async function eliminarProducto(codigo) {
-  if (!confirm('Eliminar el producto ' + codigo + '?')) return;
+async function eliminarVehiculo(placa) {
+  if (!confirm('Eliminar el vehiculo ' + placa + '?')) return;
 
-  const r = await API.borrar('/api/productos/' + codigo);
-
+  const r = await API.borrar('/api/vehiculos/' + placa);
   if (!r.ok) return avisar(r.mensaje, true);
   avisar(r.mensaje);
-  cargarProductos();
+  cargarVehiculos();
 }
 
-// ---------- 7. CONSULTAS ----------------------------------------------------
-async function consultarVentasCliente() {
-  const codigo = document.getElementById('consulta-cliente').value.trim();
-  const r = await API.get('/api/reportes/ventas-cliente' + (codigo ? '?codigo=' + codigo : ''));
+// ---------- 8. SERVICIOS ----------------------------------------------------
+async function cargarServicios() {
+  const busqueda = valor('buscar-servicio');
+  const r = await API.get('/api/servicios' + (busqueda ? '?busqueda=' + encodeURIComponent(busqueda) : ''));
+
+  if (!r.ok) return avisar(r.mensaje, true);
+
+  window._servicios = r.datos;
+  const filas = r.datos.map(s => ({
+    codigo: s.codigo, nombre: s.nombre, descripcion: s.descripcion,
+    precio: s.precio, duracion_min: s.duracion
+  }));
+  dibujarTabla('tabla-servicios', filas, f => botones('editarServicio', 'eliminarServicio', f.codigo));
+}
+
+function abrirFormularioServicio() {
+  document.getElementById('titulo-formulario-servicio').textContent = 'Nuevo servicio';
+  ['srv-codigo','srv-nombre','srv-precio','srv-duracion','srv-descripcion']
+    .forEach(id => document.getElementById(id).value = '');
+  mostrarFormulario('formulario-servicio');
+}
+
+function cerrarFormularioServicio() {
+  document.getElementById('formulario-servicio').classList.add('oculto');
+}
+
+function editarServicio(codigo) {
+  const s = (window._servicios || []).find(x => x.codigo === codigo);
+  if (!s) return;
+
+  document.getElementById('titulo-formulario-servicio').textContent = 'Editar servicio ' + codigo;
+  document.getElementById('srv-codigo').value      = s.codigo;
+  document.getElementById('srv-nombre').value      = s.nombre;
+  document.getElementById('srv-precio').value      = s.precio;
+  document.getElementById('srv-duracion').value    = s.duracion;
+  document.getElementById('srv-descripcion').value = s.descripcion || '';
+  mostrarFormulario('formulario-servicio');
+}
+
+async function guardarServicio() {
+  const datos = {
+    nombre:      valor('srv-nombre'),
+    precio:      valor('srv-precio'),
+    duracion:    valor('srv-duracion'),
+    descripcion: valor('srv-descripcion')
+  };
+
+  const codigo = valor('srv-codigo');
+  const r = codigo
+    ? await API.put('/api/servicios/' + codigo, datos)
+    : await API.post('/api/servicios', datos);
+
+  if (!r.ok) return avisar(r.mensaje, true);
+
+  avisar(r.mensaje);
+  cerrarFormularioServicio();
+  cargarServicios();
+}
+
+async function eliminarServicio(codigo) {
+  if (!confirm('Eliminar el servicio ' + codigo + '?')) return;
+
+  const r = await API.borrar('/api/servicios/' + codigo);
+  if (!r.ok) return avisar(r.mensaje, true);
+  avisar(r.mensaje);
+  cargarServicios();
+}
+
+// ---------- 9. MECANICOS ---------------------------------------------------
+async function cargarMecanicos() {
+  const busqueda = valor('buscar-mecanico');
+  const r = await API.get('/api/mecanicos' + (busqueda ? '?busqueda=' + encodeURIComponent(busqueda) : ''));
+
+  if (!r.ok) return avisar(r.mensaje, true);
+
+  window._mecanicos = r.datos;
+  const filas = r.datos.map(m => ({
+    id: m.id, nombres: m.nombres, especialidad: m.especialidad,
+    usuario: m.usuario, rol: m.rol, estado: m.activo ? 'ACTIVO' : 'INACTIVO'
+  }));
+  dibujarTabla('tabla-mecanicos', filas, f => botones('editarMecanico', 'eliminarMecanico', f.id));
+}
+
+function abrirFormularioMecanico() {
+  document.getElementById('titulo-formulario-mecanico').textContent = 'Nuevo mecanico';
+  document.getElementById('etiqueta-mec-password').textContent = 'Contrasena *';
+  ['mec-id','mec-nombres','mec-especialidad','mec-usuario','mec-password']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('mec-rol').value    = 'MECANICO';
+  document.getElementById('mec-activo').value = 'true';
+  mostrarFormulario('formulario-mecanico');
+}
+
+function cerrarFormularioMecanico() {
+  document.getElementById('formulario-mecanico').classList.add('oculto');
+}
+
+function editarMecanico(id) {
+  const m = (window._mecanicos || []).find(x => x.id === Number(id));
+  if (!m) return;
+
+  document.getElementById('titulo-formulario-mecanico').textContent = 'Editar mecanico ' + m.nombres;
+  document.getElementById('etiqueta-mec-password').textContent = 'Contrasena (vacio = no cambiar)';
+  document.getElementById('mec-id').value           = m.id;
+  document.getElementById('mec-nombres').value      = m.nombres;
+  document.getElementById('mec-especialidad').value = m.especialidad;
+  document.getElementById('mec-usuario').value      = m.usuario;
+  document.getElementById('mec-password').value     = '';
+  document.getElementById('mec-rol').value          = m.rol;
+  document.getElementById('mec-activo').value       = String(m.activo);
+  mostrarFormulario('formulario-mecanico');
+}
+
+async function guardarMecanico() {
+  const datos = {
+    nombres:      valor('mec-nombres'),
+    especialidad: valor('mec-especialidad'),
+    usuario:      valor('mec-usuario'),
+    rol:          valor('mec-rol'),
+    activo:       valor('mec-activo') === 'true'
+  };
+  const password = document.getElementById('mec-password').value;
+  if (password) datos.password = password;
+
+  const id = valor('mec-id');
+  const r = id
+    ? await API.put('/api/mecanicos/' + id, datos)
+    : await API.post('/api/mecanicos', datos);
+
+  if (!r.ok) return avisar(r.mensaje, true);
+
+  avisar(r.mensaje);
+  cerrarFormularioMecanico();
+  cargarMecanicos();
+}
+
+async function eliminarMecanico(id) {
+  if (!confirm('Eliminar el mecanico ' + id + '?')) return;
+
+  const r = await API.borrar('/api/mecanicos/' + id);
+  if (!r.ok) return avisar(r.mensaje, true);
+  avisar(r.mensaje);
+  cargarMecanicos();
+}
+
+// ---------- 10. CONSULTAS ---------------------------------------------------
+async function consultarOrdenesCliente() {
+  const cedula = valor('consulta-cliente');
+  const r = await API.get('/api/consultas/ordenes-cliente' + (cedula ? '?cedula=' + encodeURIComponent(cedula) : ''));
 
   if (!r.ok) return avisar(r.mensaje, true);
   dibujarTabla('tabla-consulta-cliente', r.datos);
 }
 
-async function consultarVentasFechas() {
-  const desde = document.getElementById('consulta-desde').value;
-  const hasta = document.getElementById('consulta-hasta').value;
+async function consultarOrdenesFechas() {
+  const desde = valor('consulta-desde');
+  const hasta = valor('consulta-hasta');
 
   if (!desde || !hasta) return avisar('Indique ambas fechas', true);
 
-  const r = await API.get('/api/reportes/ventas-fechas?desde=' + desde + '&hasta=' + hasta);
+  const r = await API.get('/api/consultas/ordenes-fechas?desde=' + desde + '&hasta=' + hasta);
 
   if (!r.ok) return avisar(r.mensaje, true);
   dibujarTabla('tabla-consulta-fechas', r.datos);
-}
-
-// ---------- 8. REPORTES -----------------------------------------------------
-const ORIGEN_VISTA = {
-  'por-cliente':   'Vista: V_VENTAS_POR_CLIENTE',
-  'por-periodo':   'Vista: V_VENTAS_POR_PERIODO',
-  'top-productos': 'Vista: V_TOP_PRODUCTOS',
-  'stock-critico': 'Vista: V_STOCK_CRITICO',
-  'por-oficina':   'Vista: V_VENTAS_POR_OFICINA',
-  'estado-cuenta': 'Vista: V_ESTADO_CUENTA',
-  'auditoria':     'Tabla: AUDITORIA (alimentada por los triggers)'
-};
-
-document.querySelectorAll('.boton-reporte').forEach(boton => {
-  boton.addEventListener('click', () => {
-    document.querySelectorAll('.boton-reporte').forEach(b => b.classList.remove('activo'));
-    boton.classList.add('activo');
-    cargarReporte(boton.dataset.vista);
-  });
-});
-
-async function cargarReporte(nombre) {
-  document.getElementById('vista-origen').textContent = ORIGEN_VISTA[nombre] || '';
-
-  const r = await API.get('/api/reportes/vista/' + nombre);
-
-  if (!r.ok) return avisar(r.mensaje, true);
-  dibujarTabla('tabla-reporte', r.datos);
 }

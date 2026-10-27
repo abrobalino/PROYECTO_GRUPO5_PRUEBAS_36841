@@ -1,7 +1,7 @@
 {
-  "name": "classicmodels-web",
+  "name": "taller-mecanico-web",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sistema web de un taller mecanico con datos quemados",
   "main": "index.js",
   "scripts": {
     "start": "node server.js"
@@ -12,8 +12,6 @@
   "type": "commonjs",
   "dependencies": {
     "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "express-session": "^1.19.0",
-    "oracledb": "^7.0.1"
+    "express": "^5.2.1"
   }
 }

@@ -1,0 +1,6 @@
+projectKey=TALLER_MECANICO
+serverUrl=http://localhost:9000
+serverVersion=26.9.0.129388
+dashboardUrl=http://localhost:9000/dashboard?id=TALLER_MECANICO
+ceTaskId=0824f8c4-8846-4b05-b69a-ec0ce64e3632
+ceTaskUrl=http://localhost:9000/api/ce/task?id=0824f8c4-8846-4b05-b69a-ec0ce64e3632
