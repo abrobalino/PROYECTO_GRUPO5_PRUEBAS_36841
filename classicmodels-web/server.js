@@ -41,9 +41,14 @@ app.use('/api/consultas', require('./routes/consultas.routes'));
 app.get('/api/ping', (req, res) => res.json({ ok: true, mensaje: 'Servidor activo' }));
 
 // --- Arranque ----------------------------------------------------------------
-app.listen(PUERTO, () => {
-  console.log('============================================');
-  console.log('  Taller Mecanico - Sistema Web');
-  console.log('  Servidor en http://localhost:' + PUERTO);
-  console.log('============================================');
-});
+if (require.main === module) {
+  app.listen(PUERTO, () => {
+    console.log('============================================');
+    console.log('  Taller Mecanico - Sistema Web');
+    console.log('  Servidor en http://localhost:' + PUERTO);
+    console.log('============================================');
+  });
+}
+
+module.exports = app;
+

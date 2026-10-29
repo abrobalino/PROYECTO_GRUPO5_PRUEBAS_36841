@@ -1,0 +1,349 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for classicmodels-web/controllers/mecanicos.controller.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">classicmodels-web/controllers</a> mecanicos.controller.js</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">68.18% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>45/66</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">62.96% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>34/54</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">69.23% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>9/13</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">79.54% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>35/44</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line medium'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// =============================================================================
+// controllers/mecanicos.controller.js  -  CRUD DE MECANICOS
+// =============================================================================
+// La contrasena nunca se envia al navegador.
+// =============================================================================
+&nbsp;
+const { mecanicos, ordenesTrabajo } = require('../datos');
+const { coincide } = require('./comun');
+&nbsp;
+const ROLES = new Set(['ADMIN', 'MECANICO']);
+&nbsp;
+// Copia del mecanico sin la contrasena
+const publico = ({ password, ...resto }) =&gt; resto;
+&nbsp;
+// GET /api/mecanicos?busqueda=&amp;activos=1
+function listar(req, res) {
+  const q = req.query.busqueda;
+  const soloActivos = req.query.activos === '1';
+&nbsp;
+  const datos = mecanicos
+    .filter(m =&gt; !soloActivos || m.activo)
+    .filter(m =&gt; coincide(q, m.nombres, m.especialidad))
+    .map(publico);
+&nbsp;
+  res.json({ ok: true, datos });
+}
+&nbsp;
+// POST /api/mecanicos
+function crear(req, res) {
+  const b = req.body;
+&nbsp;
+  if (!b.nombres || !b.especialidad)         return res.status(400).json({ ok: false, mensaje: 'Indique nombres y especialidad' });
+  if (!b.usuario || b.usuario.length &lt; 4)    return res.status(400).json({ ok: false, mensaje: 'El usuario debe tener minimo 4 caracteres' });
+  if (!b.password || b.password.length &lt; 6)  return res.status(400).json({ ok: false, mensaje: 'La contrasena debe tener minimo 6 caracteres' });
+  if (!ROLES.has(b.rol))                     return res.status(400).json({ ok: false, mensaje: 'Rol no valido' });
+  if (mecanicos.some(m =&gt; m.usuario === b.usuario)) {
+    return res.status(400).json({ ok: false, mensaje: 'El usuario ya existe' });
+  }
+&nbsp;
+  const id = Math.max(0, ...mecanicos.map(m =&gt; m.id)) + 1;
+  mecanicos.push({
+    id, nombres: b.nombres, especialidad: b.especialidad, activo: b.activo !== false,
+    usuario: b.usuario, password: b.password, rol: b.rol
+  });
+  res.json({ ok: true, id, mensaje: 'Mecanico creado' });
+}
+&nbsp;
+// PUT /api/mecanicos/:id   (si password viene vacio, se conserva la actual)
+function actualizar(req, res) {
+  const m = mecanicos.find(x =&gt; x.id === Number(req.params.id));
+  if (!m) return res.status(404).json({ ok: false, mensaje: 'Mecanico no encontrado' });
+&nbsp;
+  const b = req.body;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.usuario !== undefined &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >b.usuario.length &lt; 4)</span> <span class="cstat-no" title="statement not covered" >return res.status(400).json({ ok: false, mensaje: 'El usuario debe tener minimo 4 caracteres' });</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.usuario &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >mecanicos.some(<span class="fstat-no" title="function not covered" >x </span>=&gt; <span class="cstat-no" title="statement not covered" >x.usuario === b.usuario &amp;&amp; x.id !== m.id)</span>)</span> {
+<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ ok: false, mensaje: 'El usuario ya existe' });</span>
+  }
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.password &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >b.password.length &lt; 6)</span> <span class="cstat-no" title="statement not covered" >return res.status(400).json({ ok: false, mensaje: 'La contrasena debe tener minimo 6 caracteres' });</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.rol &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!ROLES.has(b.rol))</span>          <span class="cstat-no" title="statement not covered" >return res.status(400).json({ ok: false, mensaje: 'Rol no valido' });</span>
+&nbsp;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.nombres)              <span class="cstat-no" title="statement not covered" >m.nombres      = b.nombres;</span>
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (b.especialidad)         m.especialidad = b.especialidad;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.usuario)              <span class="cstat-no" title="statement not covered" >m.usuario      = b.usuario;</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.password)             <span class="cstat-no" title="statement not covered" >m.password     = b.password;</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.rol)                  <span class="cstat-no" title="statement not covered" >m.rol          = b.rol;</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.activo !== undefined) <span class="cstat-no" title="statement not covered" >m.activo       = Boolean(b.activo);</span>
+&nbsp;
+  res.json({ ok: true, mensaje: 'Mecanico actualizado' });
+}
+&nbsp;
+// DELETE /api/mecanicos/:id
+// Si el mecanico ya tiene ordenes, no se borra: se marca como inactivo
+// para no perder el historial.
+function <span class="fstat-no" title="function not covered" >eliminar(</span>req, res) {
+  const id = <span class="cstat-no" title="statement not covered" >Number(req.params.id);</span>
+  const i = <span class="cstat-no" title="statement not covered" >mecanicos.findIndex(<span class="fstat-no" title="function not covered" >x </span>=&gt; <span class="cstat-no" title="statement not covered" >x.id === id)</span>;</span>
+<span class="cstat-no" title="statement not covered" >  if (i === -1) <span class="cstat-no" title="statement not covered" >return res.status(404).json({ ok: false, mensaje: 'Mecanico no encontrado' });</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (ordenesTrabajo.some(<span class="fstat-no" title="function not covered" >o </span>=&gt; <span class="cstat-no" title="statement not covered" >o.mecanicoId === id)</span>) {</span>
+<span class="cstat-no" title="statement not covered" >    mecanicos[i].activo = false;</span>
+<span class="cstat-no" title="statement not covered" >    return res.json({ ok: true, mensaje: 'El mecanico tiene ordenes: se marco como inactivo' });</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  mecanicos.splice(i, 1);</span>
+<span class="cstat-no" title="statement not covered" >  res.json({ ok: true, mensaje: 'Mecanico eliminado' });</span>
+}
+&nbsp;
+module.exports = { listar, crear, actualizar, eliminar };
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-10-29T02:24:26.756Z
+            </div>
+        <script src="../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
+    </body>
+</html>
+    

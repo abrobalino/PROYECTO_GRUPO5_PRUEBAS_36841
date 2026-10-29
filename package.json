@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "test": "npm --prefix classicmodels-web test",
+    "test:coverage": "npm --prefix classicmodels-web test -- --coverage"
+  },
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

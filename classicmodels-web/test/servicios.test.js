@@ -1,14 +1,77 @@
 // =============================================================================
 // PRUEBAS CON JEST: SERVICIOS (/api/servicios)
 // =============================================================================
-// Archivo de pruebas para la API de Servicios.
-//
-// Endpoints a probar:
-//   - GET    /api/servicios       -> Listar servicios (con o sin filtro ?busqueda=)
-//   - POST   /api/servicios       -> Registrar un nuevo servicio
-//   - PUT    /api/servicios/:id   -> Actualizar datos de un servicio
-//   - DELETE /api/servicios/:id   -> Eliminar un servicio
-//
-// NOTA: Pruebas pendientes de implementación.
-// =============================================================================
 
+const request = require('supertest');
+const app = require('../server');
+
+describe('Pruebas de la API de Servicios (/api/servicios)', () => {
+
+  describe('GET /api/servicios', () => {
+    it('Debe listar todos los servicios registrados', async () => {
+      const res = await request(app).get('/api/servicios');
+
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+      expect(Array.isArray(res.body.datos)).toBe(true);
+      expect(res.body.datos.length).toBeGreaterThan(0);
+    });
+
+    it('Debe filtrar servicios por término de búsqueda (?busqueda=)', async () => {
+      const res = await request(app).get('/api/servicios?busqueda=aceite');
+
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+    });
+  });
+
+  describe('POST /api/servicios', () => {
+    it('Debe crear un nuevo servicio correctamente', async () => {
+      const nuevoServicio = {
+        nombre: 'Cambio de líquido de frenos Jest',
+        descripcion: 'Purga y cambio completo',
+        precio: 30.50,
+        duracion: 40
+      };
+
+      const res = await request(app)
+        .post('/api/servicios')
+        .send(nuevoServicio);
+
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+      expect(res.body.codigo).toMatch(/^SRV-\d{3}$/);
+    });
+
+    it('Debe fallar con 400 si falta el nombre', async () => {
+      const res = await request(app)
+        .post('/api/servicios')
+        .send({ precio: 25, duracion: 30 });
+
+      expect(res.status).toBe(400);
+      expect(res.body.ok).toBe(false);
+    });
+
+    it('Debe fallar con 400 si el precio es menor o igual a 0', async () => {
+      const res = await request(app)
+        .post('/api/servicios')
+        .send({ nombre: 'Prueba', precio: 0, duracion: 30 });
+
+      expect(res.status).toBe(400);
+      expect(res.body.ok).toBe(false);
+    });
+  });
+
+  describe('PUT /api/servicios/:codigo', () => {
+    it('Debe actualizar un servicio existente exitosamente', async () => {
+      const res = await request(app)
+        .put('/api/servicios/SRV-001')
+        .send({ precio: 50.00, duracion: 35 });
+
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+      expect(res.body.mensaje).toBe('Servicio actualizado');
+    });
+  });
+
+});
