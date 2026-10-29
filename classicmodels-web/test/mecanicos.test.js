@@ -142,6 +142,33 @@ describe('Pruebas de la API de Mecánicos (/api/mecanicos)', () => {
       expect(res.status).toBe(404);
       expect(res.body.ok).toBe(false);
     });
-  });
 
+    it('Debe fallar con 400 si el nuevo usuario tiene menos de 4 caracteres', async () => {
+      const res = await request(app).put('/api/mecanicos/3').send({ usuario: 'abc' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toBe('El usuario debe tener minimo 4 caracteres');
+    });
+
+    it('Debe fallar con 400 si el nuevo usuario ya lo usa otro mecánico', async () => {
+      const res = await request(app).put('/api/mecanicos/3').send({ usuario: 'admin' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toBe('El usuario ya existe');
+    });
+
+    it('Debe fallar con 400 si la nueva contraseña es muy corta', async () => {
+      const res = await request(app).put('/api/mecanicos/3').send({ password: '123' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toBe('La contrasena debe tener minimo 6 caracteres');
+    });
+
+    it('Debe fallar con 400 si el nuevo rol no es válido', async () => {
+      const res = await request(app).put('/api/mecanicos/3').send({ rol: 'SUPERUSUARIO' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toBe('Rol no valido');
+    });
+  });
 });

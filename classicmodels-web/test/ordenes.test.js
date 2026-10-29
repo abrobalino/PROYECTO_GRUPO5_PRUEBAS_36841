@@ -51,8 +51,7 @@ describe('Pruebas de la API de Órdenes de Trabajo (/api/ordenes)', () => {
         estado: 'PENDIENTE',
         observaciones: 'Prueba unitaria Jest',
         detalle: [
-          { codigoServicio: 'SRV-001', cantidad: 1 },
-          { codigoServicio: 'SRV-002', cantidad: 2 }
+          { codigoServicio: 'SRV-001', cantidad: 1 }
         ]
       };
 
@@ -139,6 +138,71 @@ describe('Pruebas de la API de Órdenes de Trabajo (/api/ordenes)', () => {
 
       expect(res.status).toBe(404);
       expect(res.body.ok).toBe(false);
+    });
+  });
+
+  describe('Validaciones adicionales de órdenes', () => {
+    const base = { fecha: '2026-10-28', placa: 'PEF-9012', mecanicoId: 3, estado: 'PENDIENTE' };
+
+    it('Debe filtrar órdenes por placa (?placa=)', async () => {
+      const res = await request(app).get('/api/ordenes?placa=PBA-1234');
+
+      expect(res.status).toBe(200);
+      res.body.datos.forEach(o => expect(o.placa).toBe('PBA-1234'));
+    });
+
+    it('Debe fallar con 400 si la fecha no tiene formato válido', async () => {
+      const res = await request(app).post('/api/ordenes')
+        .send({ ...base, fecha: 'ayer', detalle: [{ codigoServicio: 'SRV-001', cantidad: 1 }] });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toBe('La fecha no es valida');
+    });
+
+    it('Debe fallar con 400 si la fecha no existe en el calendario', async () => {
+      const res = await request(app).post('/api/ordenes')
+        .send({ ...base, fecha: '2026-13-45', detalle: [{ codigoServicio: 'SRV-001', cantidad: 1 }] });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toBe('La fecha no es valida');
+    });
+
+    it('Debe fallar con 400 si el estado no es válido', async () => {
+      const res = await request(app).post('/api/ordenes')
+        .send({ ...base, estado: 'PERDIDA', detalle: [{ codigoServicio: 'SRV-001', cantidad: 1 }] });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toBe('Estado no valido');
+    });
+
+    it('Debe fallar con 400 si un servicio del detalle no existe', async () => {
+      const res = await request(app).post('/api/ordenes')
+        .send({ ...base, detalle: [{ codigoServicio: 'SRV-999', cantidad: 1 }] });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toBe('El servicio SRV-999 no existe');
+    });
+
+    it('Debe fallar con 400 si la cantidad no es un entero mayor a 0', async () => {
+      const res = await request(app).post('/api/ordenes')
+        .send({ ...base, detalle: [{ codigoServicio: 'SRV-001', cantidad: 0 }] });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toMatch(/debe ser un entero mayor a 0/);
+    });
+
+    it('Debe crear la orden con fecha y estado por defecto', async () => {
+      const res = await request(app).post('/api/ordenes')
+        .send({
+          placa: 'PEF-9012', mecanicoId: 3,
+          detalle: [{ codigoServicio: 'SRV-001', cantidad: 3 }]
+        });
+
+      expect(res.status).toBe(200);
+
+      const orden = await request(app).get('/api/ordenes/' + res.body.numero);
+      expect(orden.body.datos.estado).toBe('PENDIENTE');
+      expect(orden.body.datos.detalle[0].cantidad).toBe(3);
     });
   });
 

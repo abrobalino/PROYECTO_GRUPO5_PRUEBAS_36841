@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.18% </span>
+                <span class="strong">75.75% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>45/66</span>
+                <span class='fraction'>50/66</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.96% </span>
+                <span class="strong">81.48% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>34/54</span>
+                <span class='fraction'>44/54</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.23% </span>
+                <span class="strong">76.92% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>9/13</span>
+                <span class='fraction'>10/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">79.54% </span>
+                <span class="strong">81.81% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>35/44</span>
+                <span class='fraction'>36/44</span>
             </div>
         
             
@@ -157,13 +157,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -200,20 +200,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -238,7 +238,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// =============================================================================
 // controllers/mecanicos.controller.js  -  CRUD DE MECANICOS
 // =============================================================================
@@ -292,12 +292,12 @@ function actualizar(req, res) {
   if (!m) return res.status(404).json({ ok: false, mensaje: 'Mecanico no encontrado' });
 &nbsp;
   const b = req.body;
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.usuario !== undefined &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >b.usuario.length &lt; 4)</span> <span class="cstat-no" title="statement not covered" >return res.status(400).json({ ok: false, mensaje: 'El usuario debe tener minimo 4 caracteres' });</span>
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.usuario &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >mecanicos.some(<span class="fstat-no" title="function not covered" >x </span>=&gt; <span class="cstat-no" title="statement not covered" >x.usuario === b.usuario &amp;&amp; x.id !== m.id)</span>)</span> {
-<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ ok: false, mensaje: 'El usuario ya existe' });</span>
+  if (b.usuario !== undefined &amp;&amp; b.usuario.length &lt; 4) return res.status(400).json({ ok: false, mensaje: 'El usuario debe tener minimo 4 caracteres' });
+  if (b.usuario &amp;&amp; mecanicos.some(x =&gt; x.usuario === b.usuario &amp;&amp; x.id !== m.id)) {
+    return res.status(400).json({ ok: false, mensaje: 'El usuario ya existe' });
   }
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.password &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >b.password.length &lt; 6)</span> <span class="cstat-no" title="statement not covered" >return res.status(400).json({ ok: false, mensaje: 'La contrasena debe tener minimo 6 caracteres' });</span>
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (b.rol &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!ROLES.has(b.rol))</span>          <span class="cstat-no" title="statement not covered" >return res.status(400).json({ ok: false, mensaje: 'Rol no valido' });</span>
+  if (b.password &amp;&amp; b.password.length &lt; 6) return res.status(400).json({ ok: false, mensaje: 'La contrasena debe tener minimo 6 caracteres' });
+  if (b.rol &amp;&amp; !ROLES.has(b.rol))          return res.status(400).json({ ok: false, mensaje: 'Rol no valido' });
 &nbsp;
   <span class="missing-if-branch" title="if path not taken" >I</span>if (b.nombres)              <span class="cstat-no" title="statement not covered" >m.nombres      = b.nombres;</span>
   <span class="missing-if-branch" title="else path not taken" >E</span>if (b.especialidad)         m.especialidad = b.especialidad;
@@ -334,7 +334,7 @@ module.exports = { listar, crear, actualizar, eliminar };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-10-29T02:24:26.756Z
+                at 2026-10-29T03:14:09.569Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

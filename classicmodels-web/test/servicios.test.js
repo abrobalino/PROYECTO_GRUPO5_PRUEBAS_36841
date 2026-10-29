@@ -74,4 +74,43 @@ describe('Pruebas de la API de Servicios (/api/servicios)', () => {
     });
   });
 
+  describe('Validaciones adicionales de servicios', () => {
+    it('Debe fallar con 400 si la duración no es un entero positivo', async () => {
+      const res = await request(app).post('/api/servicios')
+        .send({ nombre: 'Lavado', precio: 10, duracion: 0 });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toBe('La duracion debe ser un numero entero de minutos');
+    });
+
+    it('Debe crear un servicio sin descripción', async () => {
+      const res = await request(app).post('/api/servicios')
+        .send({ nombre: 'Lavado', precio: 10, duracion: 20 });
+
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+    });
+
+    it('Debe retornar 404 al actualizar un servicio que no existe', async () => {
+      const res = await request(app).put('/api/servicios/SRV-999').send({ precio: 10 });
+
+      expect(res.status).toBe(404);
+      expect(res.body.mensaje).toBe('Servicio no encontrado');
+    });
+
+    it('Debe fallar con 400 al actualizar con un precio inválido', async () => {
+      const res = await request(app).put('/api/servicios/SRV-001').send({ precio: -5 });
+
+      expect(res.status).toBe(400);
+      expect(res.body.mensaje).toBe('El precio debe ser mayor a 0');
+    });
+
+    it('Debe retornar 404 al eliminar un servicio que no existe', async () => {
+      const res = await request(app).delete('/api/servicios/SRV-999');
+
+      expect(res.status).toBe(404);
+      expect(res.body.mensaje).toBe('Servicio no encontrado');
+    });
+  });
+
 });
