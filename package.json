@@ -3,11 +3,5 @@
     "test": "npm --prefix classicmodels-web test",
     "test:coverage": "npm --prefix classicmodels-web test -- --coverage",
     "lint": "npm --prefix classicmodels-web run lint"
-  },
-  "dependencies": {
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "express-session": "^1.19.0",
-    "oracledb": "^7.0.1"
   }
 }

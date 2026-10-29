@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">87.5% </span>
+                <span class="strong">86.53% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>42/48</span>
+                <span class='fraction'>45/52</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.23% </span>
+                <span class="strong">86.84% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>30/34</span>
+                <span class='fraction'>33/38</span>
             </div>
         
             
@@ -133,12 +133,16 @@
 <a name='L68'></a><a href='#L68'>68</a>
 <a name='L69'></a><a href='#L69'>69</a>
 <a name='L70'></a><a href='#L70'>70</a>
-<a name='L71'></a><a href='#L71'>71</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">29x</span>
-<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
@@ -169,6 +173,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -181,6 +187,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -200,14 +207,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// =============================================================================
 // controllers/servicios.controller.js  -  CRUD DE SERVICIOS
 // =============================================================================
 &nbsp;
-const { servicios, ordenesTrabajo } = require('../datos');
+const { servicios, ordenesTrabajo, guardarDoc, eliminarDoc } = require('../datos');
 const { coincide } = require('./comun');
 &nbsp;
 function validar(b) {
@@ -234,10 +242,12 @@ function crear(req, res) {
   const siguiente = Math.max(0, ...servicios.map(s =&gt; Number(s.codigo.slice(4)))) + 1;
   const codigo = 'SRV-' + String(siguiente).padStart(3, '0');
 &nbsp;
-  servicios.push({
+  const nuevo = {
     codigo, nombre: b.nombre, descripcion: b.descripcion || '',
     precio: Number(b.precio), duracion: Number(b.duracion)
-  });
+  };
+  servicios.push(nuevo);
+  guardarDoc('servicios', codigo, nuevo);
   res.json({ ok: true, codigo, mensaje: 'Servicio creado' });
 }
 &nbsp;
@@ -255,6 +265,7 @@ function actualizar(req, res) {
   s.descripcion = nuevo.descripcion || <span class="branch-1 cbranch-no" title="branch not covered" >'';</span>
   s.precio      = Number(nuevo.precio);
   s.duracion    = Number(nuevo.duracion);
+  guardarDoc('servicios', s.codigo, s);
   res.json({ ok: true, mensaje: 'Servicio actualizado' });
 }
 &nbsp;
@@ -269,6 +280,7 @@ function eliminar(req, res) {
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  servicios.splice(i, 1);</span>
+<span class="cstat-no" title="statement not covered" >  eliminarDoc('servicios', req.params.codigo);</span>
 <span class="cstat-no" title="statement not covered" >  res.json({ ok: true, mensaje: 'Servicio eliminado' });</span>
 }
 &nbsp;
@@ -280,7 +292,7 @@ module.exports = { listar, crear, actualizar, eliminar };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-10-29T03:14:09.569Z
+                at 2026-10-29T16:05:57.492Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

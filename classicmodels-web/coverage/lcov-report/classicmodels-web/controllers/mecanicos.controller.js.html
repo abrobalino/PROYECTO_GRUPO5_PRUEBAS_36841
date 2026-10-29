@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75.75% </span>
+                <span class="strong">74.64% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>50/66</span>
+                <span class='fraction'>53/71</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.81% </span>
+                <span class="strong">79.59% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>36/44</span>
+                <span class='fraction'>39/49</span>
             </div>
         
             
@@ -151,19 +151,24 @@
 <a name='L86'></a><a href='#L86'>86</a>
 <a name='L87'></a><a href='#L87'>87</a>
 <a name='L88'></a><a href='#L88'>88</a>
-<a name='L89'></a><a href='#L89'>89</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">29x</span>
-<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -196,6 +201,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -219,6 +226,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -232,20 +240,22 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// =============================================================================
 // controllers/mecanicos.controller.js  -  CRUD DE MECANICOS
 // =============================================================================
 // La contrasena nunca se envia al navegador.
 // =============================================================================
 &nbsp;
-const { mecanicos, ordenesTrabajo } = require('../datos');
+const { mecanicos, ordenesTrabajo, guardarDoc, eliminarDoc } = require('../datos');
 const { coincide } = require('./comun');
 &nbsp;
 const ROLES = new Set(['ADMIN', 'MECANICO']);
@@ -279,10 +289,12 @@ function crear(req, res) {
   }
 &nbsp;
   const id = Math.max(0, ...mecanicos.map(m =&gt; m.id)) + 1;
-  mecanicos.push({
+  const nuevo = {
     id, nombres: b.nombres, especialidad: b.especialidad, activo: b.activo !== false,
     usuario: b.usuario, password: b.password, rol: b.rol
-  });
+  };
+  mecanicos.push(nuevo);
+  guardarDoc('mecanicos', String(id), nuevo);
   res.json({ ok: true, id, mensaje: 'Mecanico creado' });
 }
 &nbsp;
@@ -306,6 +318,7 @@ function actualizar(req, res) {
   <span class="missing-if-branch" title="if path not taken" >I</span>if (b.rol)                  <span class="cstat-no" title="statement not covered" >m.rol          = b.rol;</span>
   <span class="missing-if-branch" title="if path not taken" >I</span>if (b.activo !== undefined) <span class="cstat-no" title="statement not covered" >m.activo       = Boolean(b.activo);</span>
 &nbsp;
+  guardarDoc('mecanicos', String(m.id), m);
   res.json({ ok: true, mensaje: 'Mecanico actualizado' });
 }
 &nbsp;
@@ -319,10 +332,12 @@ function <span class="fstat-no" title="function not covered" >eliminar(</span>re
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  if (ordenesTrabajo.some(<span class="fstat-no" title="function not covered" >o </span>=&gt; <span class="cstat-no" title="statement not covered" >o.mecanicoId === id)</span>) {</span>
 <span class="cstat-no" title="statement not covered" >    mecanicos[i].activo = false;</span>
+<span class="cstat-no" title="statement not covered" >    guardarDoc('mecanicos', String(id), mecanicos[i]);</span>
 <span class="cstat-no" title="statement not covered" >    return res.json({ ok: true, mensaje: 'El mecanico tiene ordenes: se marco como inactivo' });</span>
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  mecanicos.splice(i, 1);</span>
+<span class="cstat-no" title="statement not covered" >  eliminarDoc('mecanicos', String(id));</span>
 <span class="cstat-no" title="statement not covered" >  res.json({ ok: true, mensaje: 'Mecanico eliminado' });</span>
 }
 &nbsp;
@@ -334,7 +349,7 @@ module.exports = { listar, crear, actualizar, eliminar };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-10-29T03:14:09.569Z
+                at 2026-10-29T16:05:57.492Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

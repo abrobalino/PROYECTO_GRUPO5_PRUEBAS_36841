@@ -2,7 +2,7 @@
 // controllers/clientes.controller.js  -  CRUD DE CLIENTES
 // =============================================================================
 
-const { clientes, vehiculos } = require('../datos');
+const { clientes, vehiculos, guardarDoc, eliminarDoc } = require('../datos');
 const { coincide } = require('./comun');
 
 function emailValido(email) {
@@ -49,10 +49,12 @@ function crear(req, res) {
     return res.status(400).json({ ok: false, mensaje: 'Ya existe un cliente con esa cedula' });
   }
 
-  clientes.push({
+  const nuevo = {
     cedula: b.cedula, nombres: b.nombres, telefono: b.telefono,
     email: b.email, direccion: b.direccion
-  });
+  };
+  clientes.push(nuevo);
+  guardarDoc('clientes', b.cedula, nuevo);
   res.json({ ok: true, cedula: b.cedula, mensaje: 'Cliente creado' });
 }
 
@@ -69,6 +71,7 @@ function actualizar(req, res) {
   c.telefono  = nuevo.telefono;
   c.email     = nuevo.email;
   c.direccion = nuevo.direccion;
+  guardarDoc('clientes', c.cedula, c);
   res.json({ ok: true, mensaje: 'Cliente actualizado' });
 }
 
@@ -83,6 +86,7 @@ function eliminar(req, res) {
   }
 
   clientes.splice(i, 1);
+  eliminarDoc('clientes', req.params.cedula);
   res.json({ ok: true, mensaje: 'Cliente eliminado' });
 }
 

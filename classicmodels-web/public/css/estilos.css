@@ -65,8 +65,8 @@ body {
   font-size: .9rem;
   white-space: nowrap;
 }
-.boton-menu:hover  { background: rgba(255,255,255,.12); color: #fff; }
-.boton-menu.activo { background: rgba(255,255,255,.2);  color: #fff; font-weight: 600; }
+.boton-menu:hover  { background: var(--azul-claro); color: #ffffff; }
+.boton-menu.activo { background: #0f3557; color: #ffffff; font-weight: 600; }
 
 
 /* ---------- 3. CONTENIDO Y SECCIONES ---------- */

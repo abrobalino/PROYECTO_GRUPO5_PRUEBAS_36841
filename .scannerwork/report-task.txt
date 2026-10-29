@@ -1,6 +1,0 @@
-projectKey=proyecto-GrupoD
-serverUrl=http://localhost:9000
-serverVersion=26.9.0.129388
-dashboardUrl=http://localhost:9000/dashboard?id=proyecto-GrupoD
-ceTaskId=296a06f8-04af-465a-8029-d487fa4fa3c8
-ceTaskUrl=http://localhost:9000/api/ce/task?id=296a06f8-04af-465a-8029-d487fa4fa3c8

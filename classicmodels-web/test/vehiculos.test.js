@@ -126,4 +126,38 @@ describe('Pruebas de la API de Vehículos (/api/vehiculos)', () => {
       expect(res.body).toHaveProperty('mensaje', 'Vehiculo no encontrado');
     });
   });
+
+  describe('GET /api/vehiculos', () => {
+    it('Debe listar todos los vehiculos', async () => {
+      const res = await request(app).get('/api/vehiculos');
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+      expect(Array.isArray(res.body.datos)).toBe(true);
+    });
+
+    it('Debe filtrar vehiculos por cliente', async () => {
+      const res = await request(app).get('/api/vehiculos?cliente=1712345678');
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+      res.body.datos.forEach(v => expect(v.cedulaCliente).toBe('1712345678'));
+    });
+  });
+
+  describe('PUT /api/vehiculos/:placa', () => {
+    it('Debe actualizar un vehiculo existente', async () => {
+      const res = await request(app)
+        .put('/api/vehiculos/PBA-1234')
+        .send({ marca: 'Chevrolet', modelo: 'Aveo Emotion', anio: 2016, cedulaCliente: '1712345678' });
+      expect(res.status).toBe(200);
+      expect(res.body.mensaje).toBe('Vehiculo actualizado');
+    });
+
+    it('Debe fallar con 404 si el vehiculo no existe', async () => {
+      const res = await request(app)
+        .put('/api/vehiculos/ZZZ-9999')
+        .send({ marca: 'Toyota', modelo: 'Yaris', anio: 2020, cedulaCliente: '1712345678' });
+      expect(res.status).toBe(404);
+      expect(res.body.mensaje).toBe('Vehiculo no encontrado');
+    });
+  });
 });

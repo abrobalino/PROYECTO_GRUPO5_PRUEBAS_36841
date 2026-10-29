@@ -1,111 +1,152 @@
 // =============================================================================
-// datos.js  -  DATOS QUEMADOS DEL TALLER MECANICO
+// datos.js  -  ACCESO A DATOS CONECTADO A FIREBASE CLOUD FIRESTORE
 // =============================================================================
-// No hay base de datos: la informacion vive en estos 5 arreglos en memoria.
-// Los controladores leen y modifican estos arreglos directamente.
-//
-// IMPORTANTE: los cambios (altas, ediciones, bajas) se pierden al reiniciar
-// el servidor, porque todo vuelve a cargarse desde este archivo.
-//
-//   clientes        -> duenos de los vehiculos            (clave: cedula)
-//   mecanicos       -> personal del taller + login         (clave: id)
-//   servicios       -> catalogo con precio y duracion      (clave: codigo)
-//   vehiculos       -> placa, marca, modelo, anio, dueno   (clave: placa)
-//   ordenesTrabajo  -> la orden lleva su detalle adentro   (clave: numero)
+// NO HAY DATOS QUEMADOS EN ESTE ARCHIVO.
+// La informacion se lee y se persiste exclusivamente desde la base de datos
+// Cloud Firestore en Google Firebase (Proyecto: taller-mecanico-36841).
+// Si la conexion se corta (USE_FIREBASE=false o falla de red), el sistema
+// rechaza las peticiones con error HTTP 503 (comportamiento real de produccion).
 // =============================================================================
 
-const clientes = [
-  { cedula: '1712345678', nombres: 'María Fernanda López',  telefono: '0991234567', email: 'mlopez@correo.com',   direccion: 'Av. General Enríquez y Calle Montúfar, Sangolquí' },
-  { cedula: '1723456789', nombres: 'José Antonio Guerrero', telefono: '0987654321', email: 'jguerrero@correo.com', direccion: 'San Rafael, Calle Isla Floreana 120' },
-  { cedula: '1734567890', nombres: 'Gabriela Salazar',      telefono: '0976543210', email: 'gsalazar@correo.com',  direccion: 'Conocoto, Av. Ilaló 45' },
-  { cedula: '1745678901', nombres: 'Ricardo Montalvo',      telefono: '0965432109', email: 'rmontalvo@correo.com', direccion: 'Capelo, Calle Los Pinos 8' },
-  { cedula: '1756789012', nombres: 'Paola Cevallos',        telefono: '0954321098', email: 'pcevallos@correo.com', direccion: 'Selva Alegre, Pasaje Las Rosas 3' },
-  { cedula: '1767890123', nombres: 'Fernando Ortiz',        telefono: '0943210987', email: 'fortiz@correo.com',    direccion: 'Amaguaña, Av. Mariana de Jesús 210' }
-];
+const admin = require('firebase-admin');
+const path = require('node:path');
+const fs = require('node:fs');
 
-// El login vive aqui: cada mecanico tiene usuario, password y rol.
-// rol: ADMIN (jefe de taller) o MECANICO.
-const mecanicos = [
-  { id: 1, nombres: 'Carlos Andrade', especialidad: 'Jefe de taller',          activo: true,  usuario: 'admin',   password: process.env.ADMIN_PASSWORD,    rol: 'ADMIN' },
-  { id: 2, nombres: 'Luis Pérez',     especialidad: 'Motor',                   activo: true,  usuario: 'lperez',  password: process.env.MECANICO_PASSWORD, rol: 'MECANICO' },
-  { id: 3, nombres: 'Andrea Torres',  especialidad: 'Frenos y suspensión',     activo: true,  usuario: 'atorres', password: process.env.MECANICO_PASSWORD, rol: 'MECANICO' },
-  { id: 4, nombres: 'Jorge Male',     especialidad: 'Electricidad automotriz', activo: true,  usuario: 'jmale',   password: process.env.MECANICO_PASSWORD, rol: 'MECANICO' },
-  { id: 5, nombres: 'Diego Vaca',     especialidad: 'Enderezada y pintura',    activo: false, usuario: 'dvaca',   password: process.env.MECANICO_PASSWORD, rol: 'MECANICO' }
-];
+const serviceAccountPath = path.join(__dirname, 'serviceAccountKey.json');
+let db = null;
+const usarFirebase = process.env.USE_FIREBASE !== 'false';
 
-// duracion en minutos
-const servicios = [
-  { codigo: 'SRV-001', nombre: 'Cambio de aceite y filtro',   descripcion: 'Aceite sintético 5W-30 y filtro nuevo',     precio: 45.00,  duracion: 30 },
-  { codigo: 'SRV-002', nombre: 'Alineación y balanceo',       descripcion: 'Alineación computarizada de 4 ruedas',      precio: 35.00,  duracion: 45 },
-  { codigo: 'SRV-003', nombre: 'Cambio de pastillas de freno', descripcion: 'Pastillas delanteras, incluye mano de obra', precio: 60.00,  duracion: 60 },
-  { codigo: 'SRV-004', nombre: 'ABC de motor',                descripcion: 'Bujías, filtros de aire y combustible',     precio: 80.00,  duracion: 90 },
-  { codigo: 'SRV-005', nombre: 'Diagnóstico por escáner',     descripcion: 'Lectura de códigos de falla OBD2',          precio: 25.00,  duracion: 20 },
-  { codigo: 'SRV-006', nombre: 'Cambio de batería',           descripcion: 'Instalación y prueba del sistema de carga', precio: 20.00,  duracion: 15 },
-  { codigo: 'SRV-007', nombre: 'Cambio de amortiguadores',    descripcion: 'Par de amortiguadores, mano de obra',       precio: 120.00, duracion: 120 },
-  { codigo: 'SRV-008', nombre: 'Lavado de inyectores',        descripcion: 'Limpieza por ultrasonido',                  precio: 55.00,  duracion: 60 }
-];
-
-const vehiculos = [
-  { placa: 'PBA-1234', marca: 'Chevrolet', modelo: 'Aveo',     anio: 2015, cedulaCliente: '1712345678' },
-  { placa: 'PCD-5678', marca: 'Kia',       modelo: 'Sportage', anio: 2020, cedulaCliente: '1712345678' },
-  { placa: 'PEF-9012', marca: 'Toyota',    modelo: 'Hilux',    anio: 2018, cedulaCliente: '1723456789' },
-  { placa: 'PGH-3456', marca: 'Hyundai',   modelo: 'Tucson',   anio: 2021, cedulaCliente: '1734567890' },
-  { placa: 'PIJ-7890', marca: 'Mazda',     modelo: 'CX-5',     anio: 2019, cedulaCliente: '1745678901' },
-  { placa: 'PKL-2345', marca: 'Suzuki',    modelo: 'Vitara',   anio: 2016, cedulaCliente: '1756789012' },
-  { placa: 'PMN-6789', marca: 'Nissan',    modelo: 'Sentra',   anio: 2017, cedulaCliente: '1756789012' }
-];
-
-// estado: PENDIENTE -> EN PROCESO -> TERMINADA -> ENTREGADA
-// El detalle guarda nombre y precio del servicio al momento de la orden,
-// asi un cambio de precio en el catalogo no altera las ordenes anteriores.
-const ordenesTrabajo = [
-  {
-    numero: 1001, fecha: '2026-09-02', placa: 'PBA-1234', mecanicoId: 2, estado: 'ENTREGADA',
-    observaciones: 'Mantenimiento de los 80.000 km',
-    detalle: [
-      { codigoServicio: 'SRV-001', nombre: 'Cambio de aceite y filtro', precio: 45.00, cantidad: 1 },
-      { codigoServicio: 'SRV-004', nombre: 'ABC de motor',              precio: 80.00, cantidad: 1 }
-    ]
-  },
-  {
-    numero: 1002, fecha: '2026-09-10', placa: 'PEF-9012', mecanicoId: 3, estado: 'ENTREGADA',
-    observaciones: 'Ruido al frenar',
-    detalle: [
-      { codigoServicio: 'SRV-003', nombre: 'Cambio de pastillas de freno', precio: 60.00, cantidad: 1 },
-      { codigoServicio: 'SRV-002', nombre: 'Alineación y balanceo',        precio: 35.00, cantidad: 1 }
-    ]
-  },
-  {
-    numero: 1003, fecha: '2026-09-21', placa: 'PGH-3456', mecanicoId: 4, estado: 'ENTREGADA',
-    observaciones: 'No enciende en las mañanas',
-    detalle: [
-      { codigoServicio: 'SRV-005', nombre: 'Diagnóstico por escáner', precio: 25.00, cantidad: 1 },
-      { codigoServicio: 'SRV-006', nombre: 'Cambio de batería',       precio: 20.00, cantidad: 1 }
-    ]
-  },
-  {
-    numero: 1004, fecha: '2026-10-05', placa: 'PIJ-7890', mecanicoId: 3, estado: 'TERMINADA',
-    observaciones: 'Golpeteo en la suspensión trasera',
-    detalle: [
-      { codigoServicio: 'SRV-007', nombre: 'Cambio de amortiguadores', precio: 120.00, cantidad: 2 },
-      { codigoServicio: 'SRV-002', nombre: 'Alineación y balanceo',    precio: 35.00,  cantidad: 1 }
-    ]
-  },
-  {
-    numero: 1005, fecha: '2026-10-18', placa: 'PCD-5678', mecanicoId: 2, estado: 'EN PROCESO',
-    observaciones: 'Pierde potencia en subidas',
-    detalle: [
-      { codigoServicio: 'SRV-005', nombre: 'Diagnóstico por escáner', precio: 25.00, cantidad: 1 },
-      { codigoServicio: 'SRV-008', nombre: 'Lavado de inyectores',    precio: 55.00, cantidad: 1 }
-    ]
-  },
-  {
-    numero: 1006, fecha: '2026-10-25', placa: 'PKL-2345', mecanicoId: 2, estado: 'PENDIENTE',
-    observaciones: 'Cambio de aceite programado',
-    detalle: [
-      { codigoServicio: 'SRV-001', nombre: 'Cambio de aceite y filtro', precio: 45.00, cantidad: 1 }
-    ]
+if (usarFirebase && fs.existsSync(serviceAccountPath)) {
+  const serviceAccount = require(serviceAccountPath);
+  if (!admin.apps.length) {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
   }
-];
+  db = admin.firestore();
+} else if (!usarFirebase) {
+  console.warn('⚠ ATENCION: Conexion con base de datos CORTADA por configuracion (USE_FIREBASE=false).');
+}
 
-module.exports = { clientes, mecanicos, servicios, vehiculos, ordenesTrabajo };
+// Colecciones en memoria pobladas exclusivamente desde Firestore
+const clientes = [];
+const mecanicos = [];
+const servicios = [];
+const vehiculos = [];
+const ordenesTrabajo = [];
+
+let cargados = false;
+let cargandoPromise = null;
+
+const IS_TEST = process.env.NODE_ENV === 'test';
+let snapshotInicial = global.__TEST_SNAPSHOT__ || null;
+
+async function cargarDesdeFirestore() {
+  if (!db) {
+    throw new Error('No hay conexion con la base de datos Firestore');
+  }
+
+  if (cargados) return;
+  if (cargandoPromise) return cargandoPromise;
+
+  cargandoPromise = (async () => {
+    const snapCache = snapshotInicial || global.__TEST_SNAPSHOT__;
+    if (IS_TEST && snapCache) {
+      clientes.length = 0;
+      clientes.push(...structuredClone(snapCache.clientes));
+      mecanicos.length = 0;
+      mecanicos.push(...structuredClone(snapCache.mecanicos));
+      servicios.length = 0;
+      servicios.push(...structuredClone(snapCache.servicios));
+      vehiculos.length = 0;
+      vehiculos.push(...structuredClone(snapCache.vehiculos));
+      ordenesTrabajo.length = 0;
+      ordenesTrabajo.push(...structuredClone(snapCache.ordenesTrabajo));
+      cargados = true;
+      return;
+    }
+
+    const [cSnap, mSnap, sSnap, vSnap, oSnap] = await Promise.all([
+      db.collection('clientes').get(),
+      db.collection('mecanicos').get(),
+      db.collection('servicios').get(),
+      db.collection('vehiculos').get(),
+      db.collection('ordenesTrabajo').get()
+    ]);
+
+    clientes.length = 0;
+    cSnap.forEach(d => clientes.push(d.data()));
+
+    mecanicos.length = 0;
+    mSnap.forEach(d => {
+      const m = d.data();
+      m.id = Number(m.id || d.id);
+      mecanicos.push(m);
+    });
+
+    servicios.length = 0;
+    sSnap.forEach(d => servicios.push(d.data()));
+
+    vehiculos.length = 0;
+    vSnap.forEach(d => vehiculos.push(d.data()));
+
+    ordenesTrabajo.length = 0;
+    oSnap.forEach(d => {
+      const o = d.data();
+      o.numero = Number(o.numero || d.id);
+      ordenesTrabajo.push(o);
+    });
+
+    if (!snapshotInicial) {
+      snapshotInicial = {
+        clientes: structuredClone(clientes),
+        mecanicos: structuredClone(mecanicos),
+        servicios: structuredClone(servicios),
+        vehiculos: structuredClone(vehiculos),
+        ordenesTrabajo: structuredClone(ordenesTrabajo)
+      };
+      if (IS_TEST) {
+        global.__TEST_SNAPSHOT__ = snapshotInicial;
+      }
+    }
+
+    cargados = true;
+  })().finally(() => {
+    cargandoPromise = null;
+  });
+
+  return cargandoPromise;
+}
+
+// Persistencia en Cloud Firestore (activa en ejecucion normal / servidor web / Postman)
+async function guardarDoc(coleccion, id, data) {
+  if (!db || IS_TEST) return;
+  try {
+    await db.collection(coleccion).doc(String(id)).set(data, { merge: true });
+  } catch (err) {
+    console.error(`Error guardando en Firestore (${coleccion}/${id}):`, err.message);
+  }
+}
+
+async function eliminarDoc(coleccion, id) {
+  if (!db || IS_TEST) return;
+  try {
+    await db.collection(coleccion).doc(String(id)).delete();
+  } catch (err) {
+    console.error(`Error eliminando de Firestore (${coleccion}/${id}):`, err.message);
+  }
+}
+
+module.exports = {
+  clientes,
+  mecanicos,
+  servicios,
+  vehiculos,
+  ordenesTrabajo,
+  db,
+  get estaConectado() { return Boolean(db); },
+  get cargados() { return cargados; },
+  cargarDesdeFirestore,
+  guardarDoc,
+  eliminarDoc
+};

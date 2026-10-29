@@ -4,7 +4,7 @@
 // La contrasena nunca se envia al navegador.
 // =============================================================================
 
-const { mecanicos, ordenesTrabajo } = require('../datos');
+const { mecanicos, ordenesTrabajo, guardarDoc, eliminarDoc } = require('../datos');
 const { coincide } = require('./comun');
 
 const ROLES = new Set(['ADMIN', 'MECANICO']);
@@ -38,10 +38,12 @@ function crear(req, res) {
   }
 
   const id = Math.max(0, ...mecanicos.map(m => m.id)) + 1;
-  mecanicos.push({
+  const nuevo = {
     id, nombres: b.nombres, especialidad: b.especialidad, activo: b.activo !== false,
     usuario: b.usuario, password: b.password, rol: b.rol
-  });
+  };
+  mecanicos.push(nuevo);
+  guardarDoc('mecanicos', String(id), nuevo);
   res.json({ ok: true, id, mensaje: 'Mecanico creado' });
 }
 
@@ -65,6 +67,7 @@ function actualizar(req, res) {
   if (b.rol)                  m.rol          = b.rol;
   if (b.activo !== undefined) m.activo       = Boolean(b.activo);
 
+  guardarDoc('mecanicos', String(m.id), m);
   res.json({ ok: true, mensaje: 'Mecanico actualizado' });
 }
 
@@ -78,10 +81,12 @@ function eliminar(req, res) {
 
   if (ordenesTrabajo.some(o => o.mecanicoId === id)) {
     mecanicos[i].activo = false;
+    guardarDoc('mecanicos', String(id), mecanicos[i]);
     return res.json({ ok: true, mensaje: 'El mecanico tiene ordenes: se marco como inactivo' });
   }
 
   mecanicos.splice(i, 1);
+  eliminarDoc('mecanicos', String(id));
   res.json({ ok: true, mensaje: 'Mecanico eliminado' });
 }
 

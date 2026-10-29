@@ -2,7 +2,7 @@
 // controllers/vehiculos.controller.js  -  CRUD DE VEHICULOS
 // =============================================================================
 
-const { vehiculos, clientes, ordenesTrabajo } = require('../datos');
+const { vehiculos, clientes, ordenesTrabajo, guardarDoc, eliminarDoc } = require('../datos');
 const { coincide } = require('./comun');
 
 // Placa ecuatoriana: 3 letras, guion y 3 o 4 numeros (ej. PBA-1234)
@@ -46,10 +46,12 @@ function crear(req, res) {
     return res.status(400).json({ ok: false, mensaje: 'Ya existe un vehiculo con esa placa' });
   }
 
-  vehiculos.push({
+  const nuevo = {
     placa: b.placa, marca: b.marca, modelo: b.modelo,
     anio: Number(b.anio), cedulaCliente: b.cedulaCliente
-  });
+  };
+  vehiculos.push(nuevo);
+  guardarDoc('vehiculos', b.placa, nuevo);
   res.json({ ok: true, placa: b.placa, mensaje: 'Vehiculo creado' });
 }
 
@@ -66,6 +68,7 @@ function actualizar(req, res) {
   v.modelo        = nuevo.modelo;
   v.anio          = Number(nuevo.anio);
   v.cedulaCliente = nuevo.cedulaCliente;
+  guardarDoc('vehiculos', v.placa, v);
   res.json({ ok: true, mensaje: 'Vehiculo actualizado' });
 }
 
@@ -80,6 +83,7 @@ function eliminar(req, res) {
   }
 
   vehiculos.splice(i, 1);
+  eliminarDoc('vehiculos', req.params.placa);
   res.json({ ok: true, mensaje: 'Vehiculo eliminado' });
 }
 

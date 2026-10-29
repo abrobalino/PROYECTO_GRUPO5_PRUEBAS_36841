@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">70.75% </span>
+                <span class="strong">70% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>75/106</span>
+                <span class='fraction'>77/110</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">70.51% </span>
+                <span class="strong">69.51% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>55/78</span>
+                <span class='fraction'>57/82</span>
             </div>
         
             
@@ -238,7 +238,11 @@
 <a name='L173'></a><a href='#L173'>173</a>
 <a name='L174'></a><a href='#L174'>174</a>
 <a name='L175'></a><a href='#L175'>175</a>
-<a name='L176'></a><a href='#L176'>176</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -252,12 +256,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">29x</span>
-<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">34x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -363,6 +367,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -397,6 +403,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -410,9 +417,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">34x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// =============================================================================
 // controllers/ordenes.controller.js  -  CRUD DE ORDENES DE TRABAJO
 // =============================================================================
@@ -427,7 +435,7 @@
 //   - Solo se eliminan ordenes PENDIENTES.
 // =============================================================================
 &nbsp;
-const { ordenesTrabajo, vehiculos, clientes, mecanicos, servicios } = require('../datos');
+const { ordenesTrabajo, vehiculos, clientes, mecanicos, servicios, guardarDoc, eliminarDoc } = require('../datos');
 const { coincide } = require('./comun');
 &nbsp;
 const ESTADOS = ['PENDIENTE', 'EN PROCESO', 'TERMINADA', 'ENTREGADA'];
@@ -533,10 +541,12 @@ function crear(req, res) {
   if (r.error) return res.status(400).json({ ok: false, mensaje: r.error });
 &nbsp;
   const numero = Math.max(1000, ...ordenesTrabajo.map(o =&gt; o.numero)) + 1;
-  ordenesTrabajo.push({
+  const nueva = {
     numero, fecha: b.fecha, placa: b.placa, mecanicoId: Number(b.mecanicoId),
     estado: b.estado, observaciones: b.observaciones || '', detalle: r.detalle
-  });
+  };
+  ordenesTrabajo.push(nueva);
+  guardarDoc('ordenesTrabajo', String(numero), nueva);
   res.json({ ok: true, numero, mensaje: 'Orden ' + numero + ' creada' });
 }
 &nbsp;
@@ -571,6 +581,7 @@ function actualizar(req, res) {
 <span class="cstat-no" title="statement not covered" >  o.estado        = nuevo.estado;</span>
 <span class="cstat-no" title="statement not covered" >  o.observaciones = nuevo.observaciones || '';</span>
 <span class="cstat-no" title="statement not covered" >  o.detalle       = detalle;</span>
+<span class="cstat-no" title="statement not covered" >  guardarDoc('ordenesTrabajo', String(o.numero), o);</span>
 <span class="cstat-no" title="statement not covered" >  res.json({ ok: true, mensaje: 'Orden actualizada' });</span>
 }
 &nbsp;
@@ -584,6 +595,7 @@ function <span class="fstat-no" title="function not covered" >eliminar(</span>re
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  ordenesTrabajo.splice(i, 1);</span>
+<span class="cstat-no" title="statement not covered" >  eliminarDoc('ordenesTrabajo', String(req.params.numero));</span>
 <span class="cstat-no" title="statement not covered" >  res.json({ ok: true, mensaje: 'Orden eliminada' });</span>
 }
 &nbsp;
@@ -595,7 +607,7 @@ module.exports = { listar, obtener, crear, actualizar, eliminar, enriquecer };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-10-29T03:14:09.569Z
+                at 2026-10-29T16:05:57.492Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

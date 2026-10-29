@@ -12,7 +12,7 @@
 //   - Solo se eliminan ordenes PENDIENTES.
 // =============================================================================
 
-const { ordenesTrabajo, vehiculos, clientes, mecanicos, servicios } = require('../datos');
+const { ordenesTrabajo, vehiculos, clientes, mecanicos, servicios, guardarDoc, eliminarDoc } = require('../datos');
 const { coincide } = require('./comun');
 
 const ESTADOS = ['PENDIENTE', 'EN PROCESO', 'TERMINADA', 'ENTREGADA'];
@@ -118,10 +118,12 @@ function crear(req, res) {
   if (r.error) return res.status(400).json({ ok: false, mensaje: r.error });
 
   const numero = Math.max(1000, ...ordenesTrabajo.map(o => o.numero)) + 1;
-  ordenesTrabajo.push({
+  const nueva = {
     numero, fecha: b.fecha, placa: b.placa, mecanicoId: Number(b.mecanicoId),
     estado: b.estado, observaciones: b.observaciones || '', detalle: r.detalle
-  });
+  };
+  ordenesTrabajo.push(nueva);
+  guardarDoc('ordenesTrabajo', String(numero), nueva);
   res.json({ ok: true, numero, mensaje: 'Orden ' + numero + ' creada' });
 }
 
@@ -156,6 +158,7 @@ function actualizar(req, res) {
   o.estado        = nuevo.estado;
   o.observaciones = nuevo.observaciones || '';
   o.detalle       = detalle;
+  guardarDoc('ordenesTrabajo', String(o.numero), o);
   res.json({ ok: true, mensaje: 'Orden actualizada' });
 }
 
@@ -169,6 +172,7 @@ function eliminar(req, res) {
   }
 
   ordenesTrabajo.splice(i, 1);
+  eliminarDoc('ordenesTrabajo', String(req.params.numero));
   res.json({ ok: true, mensaje: 'Orden eliminada' });
 }
 

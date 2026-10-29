@@ -1,14 +1,15 @@
 {
   "name": "taller-mecanico-web",
   "version": "1.0.0",
-  "description": "Sistema web de un taller mecanico con datos quemados",
+  "description": "Sistema web de gestion para taller mecanico con Google Cloud Firestore",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "migrar:firebase": "node migrar-a-firebase.js"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +17,8 @@
   "type": "commonjs",
   "dependencies": {
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "firebase-admin": "^13.10.0"
   },
   "devDependencies": {
     "eslint": "^9.39.5",

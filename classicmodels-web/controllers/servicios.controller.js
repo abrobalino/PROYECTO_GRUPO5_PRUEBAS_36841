@@ -2,7 +2,7 @@
 // controllers/servicios.controller.js  -  CRUD DE SERVICIOS
 // =============================================================================
 
-const { servicios, ordenesTrabajo } = require('../datos');
+const { servicios, ordenesTrabajo, guardarDoc, eliminarDoc } = require('../datos');
 const { coincide } = require('./comun');
 
 function validar(b) {
@@ -29,10 +29,12 @@ function crear(req, res) {
   const siguiente = Math.max(0, ...servicios.map(s => Number(s.codigo.slice(4)))) + 1;
   const codigo = 'SRV-' + String(siguiente).padStart(3, '0');
 
-  servicios.push({
+  const nuevo = {
     codigo, nombre: b.nombre, descripcion: b.descripcion || '',
     precio: Number(b.precio), duracion: Number(b.duracion)
-  });
+  };
+  servicios.push(nuevo);
+  guardarDoc('servicios', codigo, nuevo);
   res.json({ ok: true, codigo, mensaje: 'Servicio creado' });
 }
 
@@ -50,6 +52,7 @@ function actualizar(req, res) {
   s.descripcion = nuevo.descripcion || '';
   s.precio      = Number(nuevo.precio);
   s.duracion    = Number(nuevo.duracion);
+  guardarDoc('servicios', s.codigo, s);
   res.json({ ok: true, mensaje: 'Servicio actualizado' });
 }
 
@@ -64,6 +67,7 @@ function eliminar(req, res) {
   }
 
   servicios.splice(i, 1);
+  eliminarDoc('servicios', req.params.codigo);
   res.json({ ok: true, mensaje: 'Servicio eliminado' });
 }
 

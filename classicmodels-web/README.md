@@ -8,8 +8,9 @@ un taller mecanico. Adaptado del proyecto Classic Models.
 ## Requisitos
 
 - Node.js 18 o superior
-- **No usa base de datos**: los datos estan quemados en `datos.js` y viven en
-  memoria. Lo que se crea, edita o borra se pierde al reiniciar el servidor.
+- **Base de Datos**: Google Cloud Firestore (Firebase).
+  - Configurado en `serviceAccountKey.json`.
+  - Si la base de datos se desconecta (`USE_FIREBASE=false`), las APIs rechazan peticiones con código **503 Service Unavailable** (comportamiento real de producción).
 - **No tiene inicio de sesion**: la aplicacion abre directamente en el panel.
 
 ## Instalacion
@@ -67,9 +68,9 @@ el catalogo no altera las ordenes anteriores.
 
 ```
 classicmodels-web/
-├── .env                    Puerto del servidor (no se sube a GitHub)
-├── server.js               Arranque del servidor
-├── datos.js                Datos quemados (las 5 colecciones)
+├── .env                    Configuración del entorno y Firebase
+├── server.js               Arranque del servidor y control 503
+├── datos.js                Acceso a datos conectado a Cloud Firestore
 ├── controllers/            Logica de cada endpoint
 │   ├── clientes.controller.js
 │   ├── vehiculos.controller.js
