@@ -40,7 +40,7 @@ document.querySelectorAll('.boton-menu').forEach(boton => {
 // ---------- 3. UTILIDADES DE TABLA ------------------------------------------
 // Evita que un texto con < o " rompa el HTML
 function escapar(t) {
-  return String(t).replace(/[&<>"']/g, c =>
+  return String(t).replaceAll(/[&<>"']/g, c =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
@@ -61,7 +61,7 @@ function dibujarTabla(destino, filas, acciones = null) {
   const columnas = Object.keys(filas[0]);
 
   let html = '<table><thead><tr>';
-  columnas.forEach(c => html += '<th>' + c.replace(/_/g, ' ') + '</th>');
+  columnas.forEach(c => html += '<th>' + c.replaceAll('_', ' ') + '</th>');
   if (acciones) html += '<th>Acciones</th>';
   html += '</tr></thead><tbody>';
 
@@ -81,7 +81,13 @@ function dibujarTabla(destino, filas, acciones = null) {
 }
 
 // Columnas que se muestran como dinero
-const COLUMNAS_DINERO = ['precio', 'total', 'monto', 'ingresos', 'total_facturado', 'subtotal'];
+const COLUMNAS_DINERO = new Set(['precio', 'total', 'monto', 'ingresos', 'total_facturado', 'subtotal']);
+
+function claseEstado(valor) {
+  if (valor === 'PENDIENTE' || valor === 'INACTIVO') return 'et-rojo';
+  if (valor === 'EN PROCESO' || valor === 'TERMINADA') return 'et-ambar';
+  return 'et-verde';
+}
 
 // Da formato a los valores segun su tipo o el nombre de la columna
 function formatear(valor, columna) {
@@ -89,13 +95,10 @@ function formatear(valor, columna) {
 
   // Etiquetas de color para las columnas de estado
   if (columna === 'estado') {
-    const clase = ['PENDIENTE', 'INACTIVO'].includes(valor) ? 'et-rojo'
-                : ['EN PROCESO', 'TERMINADA'].includes(valor) ? 'et-ambar'
-                : 'et-verde';
-    return '<span class="etiqueta ' + clase + '">' + escapar(valor) + '</span>';
+    return '<span class="etiqueta ' + claseEstado(valor) + '">' + escapar(valor) + '</span>';
   }
 
-  if (COLUMNAS_DINERO.includes(columna)) return dinero(valor);
+  if (COLUMNAS_DINERO.has(columna)) return dinero(valor);
   return escapar(valor);
 }
 

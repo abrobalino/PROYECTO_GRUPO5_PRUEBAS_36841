@@ -19,7 +19,8 @@ const API = {
       const respuesta = await fetch(ruta, opciones);
       return await respuesta.json();
 
-    } catch (e) {
+    } catch (error) {
+      console.error('No se pudo conectar con el servidor:', error);
       return { ok: false, mensaje: 'No se pudo conectar con el servidor' };
     }
   },

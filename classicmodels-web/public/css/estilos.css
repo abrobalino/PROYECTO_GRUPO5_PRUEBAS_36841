@@ -18,9 +18,9 @@
   --gris-fondo:  #f2f4f7;
   --gris-borde:  #d5dae1;
   --gris-texto:  #4a5560;
-  --verde:       #2e7d4f;
+  --verde:       #1f5f3a;
   --rojo:        #b3261e;
-  --ambar:       #b06f00;
+  --ambar:       #704400;
   --blanco:      #ffffff;
   --radio:       6px;
   --sombra:      0 1px 3px rgba(0,0,0,.12);
@@ -58,7 +58,7 @@ body {
 .boton-menu {
   background: transparent;
   border: none;
-  color: rgba(255,255,255,.8);
+  color: var(--blanco);
   padding: .5rem .9rem;
   border-radius: var(--radio);
   cursor: pointer;

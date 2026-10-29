@@ -75,7 +75,8 @@ function validarCabecera(b, mecanicoAnterior = null) {
   const m = mecanicos.find(x => x.id === Number(b.mecanicoId));
   if (!m) return 'El mecanico no existe';
   if (!m.activo && m.id !== mecanicoAnterior) return 'El mecanico ' + m.nombres + ' esta inactivo';
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') || isNaN(new Date(b.fecha))) return 'La fecha no es valida';
+  const fecha = new Date(b.fecha || '');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(b.fecha || '') || Number.isNaN(fecha.getTime())) return 'La fecha no es valida';
   if (!ESTADOS.includes(b.estado)) return 'Estado no valido';
   return null;
 }

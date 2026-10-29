@@ -5,14 +5,25 @@
 const { clientes, vehiculos } = require('../datos');
 const { coincide } = require('./comun');
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function emailValido(email) {
+  if (typeof email !== 'string' || email.length === 0 || /\s/.test(email)) return false;
+
+  const partes = email.split('@');
+  if (partes.length !== 2) return false;
+
+  const [local, dominio] = partes;
+  if (!local || !dominio) return false;
+
+  const posicionPunto = dominio.indexOf('.');
+  return posicionPunto > 0 && posicionPunto < dominio.length - 1;
+}
 
 // Revisa los campos obligatorios. Devuelve el mensaje de error o null.
 function validar(b) {
   if (!/^\d{10}$/.test(b.cedula || ''))  return 'La cedula debe tener 10 digitos';
   if (!b.nombres)                         return 'Indique los nombres';
   if (!/^\d{7,10}$/.test(b.telefono || '')) return 'El telefono debe tener entre 7 y 10 digitos';
-  if (!EMAIL.test(b.email || ''))         return 'El email no es valido';
+  if (!emailValido(b.email || ''))        return 'El email no es valido';
   if (!b.direccion)                       return 'Indique la direccion';
   return null;
 }

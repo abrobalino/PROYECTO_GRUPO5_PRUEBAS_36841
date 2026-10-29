@@ -41,8 +41,8 @@
     <p class="subtitulo">Cada orden lleva su detalle de servicios adentro</p>
 
     <div class="barra-acciones">
-      <input type="text" id="buscar-orden" placeholder="Numero, placa, cliente o mecanico...">
-      <select id="filtro-estado">
+      <input type="text" id="buscar-orden" placeholder="Numero, placa, cliente o mecanico..." aria-label="Buscar ordenes">
+      <select id="filtro-estado" aria-label="Filtrar ordenes por estado">
         <option value="">Todos los estados</option>
         <option>PENDIENTE</option>
         <option>EN PROCESO</option>
@@ -58,11 +58,11 @@
       <input type="hidden" id="ord-numero">
 
       <div class="rejilla">
-        <div class="campo"><label>Cliente *</label><select id="ord-cliente" onchange="llenarVehiculosDeCliente()"></select></div>
-        <div class="campo"><label>Vehiculo *</label><select id="ord-placa"></select></div>
-        <div class="campo"><label>Mecanico *</label><select id="ord-mecanico"></select></div>
-        <div class="campo"><label>Fecha *</label><input type="date" id="ord-fecha"></div>
-        <div class="campo"><label>Estado *</label>
+        <div class="campo"><label for="ord-cliente">Cliente *</label><select id="ord-cliente" onchange="llenarVehiculosDeCliente()"></select></div>
+        <div class="campo"><label for="ord-placa">Vehiculo *</label><select id="ord-placa"></select></div>
+        <div class="campo"><label for="ord-mecanico">Mecanico *</label><select id="ord-mecanico"></select></div>
+        <div class="campo"><label for="ord-fecha">Fecha *</label><input type="date" id="ord-fecha"></div>
+        <div class="campo"><label for="ord-estado">Estado *</label>
           <select id="ord-estado">
             <option>PENDIENTE</option>
             <option>EN PROCESO</option>
@@ -70,13 +70,13 @@
             <option>ENTREGADA</option>
           </select>
         </div>
-        <div class="campo ancho-completo"><label>Observaciones</label><input type="text" id="ord-observaciones"></div>
+        <div class="campo ancho-completo"><label for="ord-observaciones">Observaciones</label><input type="text" id="ord-observaciones"></div>
       </div>
 
       <h4 class="titulo-detalle">Servicios de la orden</h4>
       <div class="barra-acciones">
-        <select id="ord-servicio"></select>
-        <input type="number" id="ord-cantidad" value="1" min="1" class="corto">
+        <select id="ord-servicio" aria-label="Seleccionar servicio"></select>
+        <input type="number" id="ord-cantidad" value="1" min="1" class="corto" aria-label="Cantidad del servicio">
         <button class="boton" onclick="agregarLineaOrden()">Agregar servicio</button>
       </div>
       <div id="detalle-orden" class="contenedor-tabla"></div>
@@ -97,7 +97,7 @@
     <p class="subtitulo">Duenos de los vehiculos que atiende el taller</p>
 
     <div class="barra-acciones">
-      <input type="text" id="buscar-cliente" placeholder="Buscar por nombre o cedula...">
+      <input type="text" id="buscar-cliente" placeholder="Buscar por nombre o cedula..." aria-label="Buscar clientes">
       <button class="boton" onclick="cargarClientes()">Buscar</button>
       <button class="boton boton-principal" onclick="abrirFormularioCliente()">Nuevo cliente</button>
     </div>
@@ -106,11 +106,11 @@
       <h3 id="titulo-formulario-cliente">Nuevo cliente</h3>
 
       <div class="rejilla">
-        <div class="campo"><label>Cedula *</label><input type="text" id="cli-cedula" maxlength="10" placeholder="10 digitos"></div>
-        <div class="campo"><label>Nombres *</label><input type="text" id="cli-nombres"></div>
-        <div class="campo"><label>Telefono *</label><input type="text" id="cli-telefono" maxlength="10" placeholder="Ej: 0991234567"></div>
-        <div class="campo"><label>Email *</label><input type="email" id="cli-email"></div>
-        <div class="campo ancho-completo"><label>Direccion *</label><input type="text" id="cli-direccion"></div>
+        <div class="campo"><label for="cli-cedula">Cedula *</label><input type="text" id="cli-cedula" maxlength="10" placeholder="10 digitos"></div>
+        <div class="campo"><label for="cli-nombres">Nombres *</label><input type="text" id="cli-nombres"></div>
+        <div class="campo"><label for="cli-telefono">Telefono *</label><input type="text" id="cli-telefono" maxlength="10" placeholder="Ej: 0991234567"></div>
+        <div class="campo"><label for="cli-email">Email *</label><input type="email" id="cli-email"></div>
+        <div class="campo ancho-completo"><label for="cli-direccion">Direccion *</label><input type="text" id="cli-direccion"></div>
       </div>
 
       <div class="acciones-formulario">
@@ -128,7 +128,7 @@
     <p class="subtitulo">Cada vehiculo pertenece a un cliente</p>
 
     <div class="barra-acciones">
-      <input type="text" id="buscar-vehiculo" placeholder="Placa, marca o modelo...">
+      <input type="text" id="buscar-vehiculo" placeholder="Placa, marca o modelo..." aria-label="Buscar vehiculos">
       <button class="boton" onclick="cargarVehiculos()">Buscar</button>
       <button class="boton boton-principal" onclick="abrirFormularioVehiculo()">Nuevo vehiculo</button>
     </div>
@@ -137,11 +137,11 @@
       <h3 id="titulo-formulario-vehiculo">Nuevo vehiculo</h3>
 
       <div class="rejilla">
-        <div class="campo"><label>Placa *</label><input type="text" id="veh-placa" placeholder="Ej: PBA-1234"></div>
-        <div class="campo"><label>Marca *</label><input type="text" id="veh-marca"></div>
-        <div class="campo"><label>Modelo *</label><input type="text" id="veh-modelo"></div>
-        <div class="campo"><label>Anio *</label><input type="number" id="veh-anio"></div>
-        <div class="campo"><label>Cliente dueno *</label><select id="veh-cliente"></select></div>
+        <div class="campo"><label for="veh-placa">Placa *</label><input type="text" id="veh-placa" placeholder="Ej: PBA-1234"></div>
+        <div class="campo"><label for="veh-marca">Marca *</label><input type="text" id="veh-marca"></div>
+        <div class="campo"><label for="veh-modelo">Modelo *</label><input type="text" id="veh-modelo"></div>
+        <div class="campo"><label for="veh-anio">Anio *</label><input type="number" id="veh-anio"></div>
+        <div class="campo"><label for="veh-cliente">Cliente dueno *</label><select id="veh-cliente"></select></div>
       </div>
 
       <div class="acciones-formulario">
@@ -159,7 +159,7 @@
     <p class="subtitulo">Catalogo de trabajos con precio y duracion</p>
 
     <div class="barra-acciones">
-      <input type="text" id="buscar-servicio" placeholder="Buscar por nombre o codigo...">
+      <input type="text" id="buscar-servicio" placeholder="Buscar por nombre o codigo..." aria-label="Buscar servicios">
       <button class="boton" onclick="cargarServicios()">Buscar</button>
       <button class="boton boton-principal" onclick="abrirFormularioServicio()">Nuevo servicio</button>
     </div>
@@ -169,10 +169,10 @@
       <input type="hidden" id="srv-codigo">
 
       <div class="rejilla">
-        <div class="campo"><label>Nombre *</label><input type="text" id="srv-nombre"></div>
-        <div class="campo"><label>Precio ($) *</label><input type="number" step="0.01" id="srv-precio"></div>
-        <div class="campo"><label>Duracion (minutos) *</label><input type="number" id="srv-duracion"></div>
-        <div class="campo ancho-completo"><label>Descripcion</label><input type="text" id="srv-descripcion"></div>
+        <div class="campo"><label for="srv-nombre">Nombre *</label><input type="text" id="srv-nombre"></div>
+        <div class="campo"><label for="srv-precio">Precio ($) *</label><input type="number" step="0.01" id="srv-precio"></div>
+        <div class="campo"><label for="srv-duracion">Duracion (minutos) *</label><input type="number" id="srv-duracion"></div>
+        <div class="campo ancho-completo"><label for="srv-descripcion">Descripcion</label><input type="text" id="srv-descripcion"></div>
       </div>
 
       <div class="acciones-formulario">
@@ -190,7 +190,7 @@
     <p class="subtitulo">Personal del taller y sus cuentas de acceso</p>
 
     <div class="barra-acciones">
-      <input type="text" id="buscar-mecanico" placeholder="Nombre o especialidad...">
+      <input type="text" id="buscar-mecanico" placeholder="Nombre o especialidad..." aria-label="Buscar mecanicos">
       <button class="boton" onclick="cargarMecanicos()">Buscar</button>
       <button class="boton boton-principal" onclick="abrirFormularioMecanico()">Nuevo mecanico</button>
     </div>
@@ -200,17 +200,17 @@
       <input type="hidden" id="mec-id">
 
       <div class="rejilla">
-        <div class="campo"><label>Nombres *</label><input type="text" id="mec-nombres"></div>
-        <div class="campo"><label>Especialidad *</label><input type="text" id="mec-especialidad"></div>
-        <div class="campo"><label>Usuario *</label><input type="text" id="mec-usuario"></div>
-        <div class="campo"><label id="etiqueta-mec-password">Contrasena *</label><input type="password" id="mec-password"></div>
-        <div class="campo"><label>Rol *</label>
+        <div class="campo"><label for="mec-nombres">Nombres *</label><input type="text" id="mec-nombres"></div>
+        <div class="campo"><label for="mec-especialidad">Especialidad *</label><input type="text" id="mec-especialidad"></div>
+        <div class="campo"><label for="mec-usuario">Usuario *</label><input type="text" id="mec-usuario"></div>
+        <div class="campo"><label for="mec-password">Contrasena *</label><input type="password" id="mec-password"></div>
+        <div class="campo"><label for="mec-rol">Rol *</label>
           <select id="mec-rol">
             <option value="MECANICO">Mecanico</option>
             <option value="ADMIN">Administrador</option>
           </select>
         </div>
-        <div class="campo"><label>Activo</label>
+        <div class="campo"><label for="mec-activo">Activo</label>
           <select id="mec-activo">
             <option value="true">Si</option>
             <option value="false">No</option>
@@ -236,7 +236,7 @@
       <h3>Ordenes por cliente</h3>
       <p class="ayuda">Historial de ordenes de todos los vehiculos de un cliente</p>
       <div class="barra-acciones">
-        <input type="text" id="consulta-cliente" maxlength="10" placeholder="Cedula (vacio = todos)">
+        <input type="text" id="consulta-cliente" maxlength="10" placeholder="Cedula (vacio = todos)" aria-label="Buscar ordenes por cedula de cliente">
         <button class="boton boton-principal" onclick="consultarOrdenesCliente()">Consultar</button>
       </div>
       <div id="tabla-consulta-cliente" class="contenedor-tabla"></div>
@@ -246,8 +246,8 @@
       <h3>Ordenes por fechas</h3>
       <p class="ayuda">Ordenes registradas entre dos fechas</p>
       <div class="barra-acciones">
-        <label>Desde</label><input type="date" id="consulta-desde" value="2026-09-01">
-        <label>Hasta</label><input type="date" id="consulta-hasta" value="2026-09-30">
+        <label for="consulta-desde">Desde</label><input type="date" id="consulta-desde" value="2026-09-01">
+        <label for="consulta-hasta">Hasta</label><input type="date" id="consulta-hasta" value="2026-09-30">
         <button class="boton boton-principal" onclick="consultarOrdenesFechas()">Consultar</button>
       </div>
       <div id="tabla-consulta-fechas" class="contenedor-tabla"></div>

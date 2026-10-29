@@ -26,11 +26,11 @@ const clientes = [
 // El login vive aqui: cada mecanico tiene usuario, password y rol.
 // rol: ADMIN (jefe de taller) o MECANICO.
 const mecanicos = [
-  { id: 1, nombres: 'Carlos Andrade', especialidad: 'Jefe de taller',          activo: true,  usuario: 'admin',   password: 'admin123',    rol: 'ADMIN' },
-  { id: 2, nombres: 'Luis Pérez',     especialidad: 'Motor',                   activo: true,  usuario: 'lperez',  password: 'mecanico123', rol: 'MECANICO' },
-  { id: 3, nombres: 'Andrea Torres',  especialidad: 'Frenos y suspensión',     activo: true,  usuario: 'atorres', password: 'mecanico123', rol: 'MECANICO' },
-  { id: 4, nombres: 'Jorge Male',     especialidad: 'Electricidad automotriz', activo: true,  usuario: 'jmale',   password: 'mecanico123', rol: 'MECANICO' },
-  { id: 5, nombres: 'Diego Vaca',     especialidad: 'Enderezada y pintura',    activo: false, usuario: 'dvaca',   password: 'mecanico123', rol: 'MECANICO' }
+  { id: 1, nombres: 'Carlos Andrade', especialidad: 'Jefe de taller',          activo: true,  usuario: 'admin',   password: process.env.ADMIN_PASSWORD,    rol: 'ADMIN' },
+  { id: 2, nombres: 'Luis Pérez',     especialidad: 'Motor',                   activo: true,  usuario: 'lperez',  password: process.env.MECANICO_PASSWORD, rol: 'MECANICO' },
+  { id: 3, nombres: 'Andrea Torres',  especialidad: 'Frenos y suspensión',     activo: true,  usuario: 'atorres', password: process.env.MECANICO_PASSWORD, rol: 'MECANICO' },
+  { id: 4, nombres: 'Jorge Male',     especialidad: 'Electricidad automotriz', activo: true,  usuario: 'jmale',   password: process.env.MECANICO_PASSWORD, rol: 'MECANICO' },
+  { id: 5, nombres: 'Diego Vaca',     especialidad: 'Enderezada y pintura',    activo: false, usuario: 'dvaca',   password: process.env.MECANICO_PASSWORD, rol: 'MECANICO' }
 ];
 
 // duracion en minutos

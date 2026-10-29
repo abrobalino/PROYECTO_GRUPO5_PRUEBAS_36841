@@ -14,9 +14,10 @@
 require('dotenv').config();
 
 const express = require('express');
-const path    = require('path');
+const path    = require('node:path');
 
 const app    = express();
+app.disable('x-powered-by');
 const PUERTO = process.env.PORT || 4000;
 
 // --- Configuracion de Express ------------------------------------------------

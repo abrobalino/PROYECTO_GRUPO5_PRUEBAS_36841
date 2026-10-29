@@ -7,7 +7,7 @@
 const { mecanicos, ordenesTrabajo } = require('../datos');
 const { coincide } = require('./comun');
 
-const ROLES = ['ADMIN', 'MECANICO'];
+const ROLES = new Set(['ADMIN', 'MECANICO']);
 
 // Copia del mecanico sin la contrasena
 const publico = ({ password, ...resto }) => resto;
@@ -32,7 +32,7 @@ function crear(req, res) {
   if (!b.nombres || !b.especialidad)         return res.status(400).json({ ok: false, mensaje: 'Indique nombres y especialidad' });
   if (!b.usuario || b.usuario.length < 4)    return res.status(400).json({ ok: false, mensaje: 'El usuario debe tener minimo 4 caracteres' });
   if (!b.password || b.password.length < 6)  return res.status(400).json({ ok: false, mensaje: 'La contrasena debe tener minimo 6 caracteres' });
-  if (!ROLES.includes(b.rol))                return res.status(400).json({ ok: false, mensaje: 'Rol no valido' });
+  if (!ROLES.has(b.rol))                     return res.status(400).json({ ok: false, mensaje: 'Rol no valido' });
   if (mecanicos.some(m => m.usuario === b.usuario)) {
     return res.status(400).json({ ok: false, mensaje: 'El usuario ya existe' });
   }
@@ -56,7 +56,7 @@ function actualizar(req, res) {
     return res.status(400).json({ ok: false, mensaje: 'El usuario ya existe' });
   }
   if (b.password && b.password.length < 6) return res.status(400).json({ ok: false, mensaje: 'La contrasena debe tener minimo 6 caracteres' });
-  if (b.rol && !ROLES.includes(b.rol))     return res.status(400).json({ ok: false, mensaje: 'Rol no valido' });
+  if (b.rol && !ROLES.has(b.rol))          return res.status(400).json({ ok: false, mensaje: 'Rol no valido' });
 
   if (b.nombres)              m.nombres      = b.nombres;
   if (b.especialidad)         m.especialidad = b.especialidad;

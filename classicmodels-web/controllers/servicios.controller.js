@@ -8,7 +8,7 @@ const { coincide } = require('./comun');
 function validar(b) {
   if (!b.nombre) return 'Indique el nombre';
   const precio = Number(b.precio), duracion = Number(b.duracion);
-  if (!(precio > 0))                                return 'El precio debe ser mayor a 0';
+  if (precio <= 0)                                  return 'El precio debe ser mayor a 0';
   if (!Number.isInteger(duracion) || duracion <= 0) return 'La duracion debe ser un numero entero de minutos';
   return null;
 }
