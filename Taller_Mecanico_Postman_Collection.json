@@ -1,0 +1,440 @@
+{
+  "info": {
+    "name": "Taller Mecánico API - Proyecto Pruebas de Software",
+    "_postman_id": "b3e0c7a5-4891-4cf1-8408-2782e44d56df",
+    "description": "Colección completa para pruebas de endpoints del sistema Taller Mecánico Web.\nServidor local: http://localhost:4000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Ping",
+      "item": [
+        {
+          "name": "Verificar Servidor (Ping)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ping",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ping"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Clientes",
+      "item": [
+        {
+          "name": "Listar todos los clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/clientes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clientes"]
+            }
+          }
+        },
+        {
+          "name": "Buscar cliente por texto (busqueda=lopez)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/clientes?busqueda=lopez",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clientes"],
+              "query": [
+                {
+                  "key": "busqueda",
+                  "value": "lopez"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear cliente (Exitoso)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"1799887766\",\n  \"nombres\": \"Juan Pérez Postman\",\n  \"telefono\": \"0987654321\",\n  \"email\": \"juan.postman@correo.com\",\n  \"direccion\": \"Av. Amazonas y Colón\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/clientes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clientes"]
+            }
+          }
+        },
+        {
+          "name": "Crear cliente (Error - Cédula inválida)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"123\",\n  \"nombres\": \"Error Cédula\",\n  \"telefono\": \"0999999999\",\n  \"email\": \"err@correo.com\",\n  \"direccion\": \"Quito\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/clientes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clientes"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Juan Pérez Modificado\",\n  \"telefono\": \"0911223344\",\n  \"email\": \"juan.mod@correo.com\",\n  \"direccion\": \"Av. Shyris\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/clientes/1799887766",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clientes", "1799887766"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar cliente (Error - tiene vehículos)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/clientes/1712345678",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clientes", "1712345678"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Vehículos",
+      "item": [
+        {
+          "name": "Listar todos los vehículos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/vehiculos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehiculos"]
+            }
+          }
+        },
+        {
+          "name": "Crear vehículo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"placa\": \"PXZ-9988\",\n  \"marca\": \"Toyota\",\n  \"modelo\": \"Corolla\",\n  \"anio\": 2023,\n  \"cedulaCliente\": \"1712345678\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/vehiculos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehiculos"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar vehículo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"marca\": \"Toyota\",\n  \"modelo\": \"Corolla Hybrid\",\n  \"anio\": 2024,\n  \"cedulaCliente\": \"1712345678\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/vehiculos/PXZ-9988",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehiculos", "PXZ-9988"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar vehículo (Error - tiene órdenes)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/vehiculos/PBA-1234",
+              "host": ["{{base_url}}"],
+              "path": ["api", "vehiculos", "PBA-1234"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Servicios",
+      "item": [
+        {
+          "name": "Listar todos los servicios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/servicios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "servicios"]
+            }
+          }
+        },
+        {
+          "name": "Crear servicio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Lavado y Encerado Premium\",\n  \"precio\": 25.50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/servicios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "servicios"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar servicio (Error - usado en órdenes)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/servicios/SRV-001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "servicios", "SRV-001"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Mecánicos",
+      "item": [
+        {
+          "name": "Listar mecánicos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/mecanicos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mecanicos"]
+            }
+          }
+        },
+        {
+          "name": "Crear mecánico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Pedro Pablo Mecánico\",\n  \"especialidad\": \"Transmisiones\",\n  \"activo\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/mecanicos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mecanicos"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Órdenes de Trabajo",
+      "item": [
+        {
+          "name": "Listar todas las órdenes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ordenes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordenes"]
+            }
+          }
+        },
+        {
+          "name": "Obtener orden específica por número",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ordenes/1001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordenes", "1001"]
+            }
+          }
+        },
+        {
+          "name": "Crear nueva orden (Exitoso)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"placa\": \"PBA-1234\",\n  \"mecanicoId\": 1,\n  \"observaciones\": \"Revisión y cambio por Postman\",\n  \"detalle\": [\n    {\n      \"codigoServicio\": \"SRV-001\",\n      \"cantidad\": 1\n    },\n    {\n      \"codigoServicio\": \"SRV-002\",\n      \"cantidad\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ordenes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordenes"]
+            }
+          }
+        },
+        {
+          "name": "Crear orden (Error - mecánico inactivo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"placa\": \"PBA-1234\",\n  \"mecanicoId\": 5,\n  \"observaciones\": \"Prueba fallo\",\n  \"detalle\": [\n    {\n      \"codigoServicio\": \"SRV-001\",\n      \"cantidad\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ordenes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordenes"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar estado de orden (a EN PROCESO)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"EN PROCESO\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ordenes/1001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordenes", "1001"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Consultas y Reportes",
+      "item": [
+        {
+          "name": "Consultar órdenes por cliente (cédula)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/consultas/ordenes-cliente?cedula=1712345678",
+              "host": ["{{base_url}}"],
+              "path": ["api", "consultas", "ordenes-cliente"],
+              "query": [
+                {
+                  "key": "cedula",
+                  "value": "1712345678"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Consultar órdenes por rango de fechas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/consultas/ordenes-fechas?desde=2026-09-01&hasta=2026-09-30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "consultas", "ordenes-fechas"],
+              "query": [
+                {
+                  "key": "desde",
+                  "value": "2026-09-01"
+                },
+                {
+                  "key": "hasta",
+                  "value": "2026-09-30"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

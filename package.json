@@ -1,7 +1,8 @@
 {
   "scripts": {
     "test": "npm --prefix classicmodels-web test",
-    "test:coverage": "npm --prefix classicmodels-web test -- --coverage"
+    "test:coverage": "npm --prefix classicmodels-web test -- --coverage",
+    "lint": "npm --prefix classicmodels-web run lint"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
